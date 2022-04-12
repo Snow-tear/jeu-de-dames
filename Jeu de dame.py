@@ -7,6 +7,7 @@ class Pion():
 
 class Game():
     damier=[[False for j in range(10)]for i in range(10)]
+    tourne = False  #Noir:True Blanc=False
     def __init__(self) -> None:
         self.damier[0][1]=Pion(True)
         for i in range(4):
@@ -26,14 +27,14 @@ class Game():
             print(i,'',end='')
             for case in self.damier[i]:
                 if not case:
-                    print("无",end='')
+                    print("  ",end='')
                 elif case.couleur:
                     print("黑",end='')
                 else:
                     print("白",end='')
             print()
 
-    def deplace(self,ligne:int,colonne:int,sens:str):
+    def avance(self,ligne:int,colonne:int,sens:str):
         pion=self.damier[ligne][colonne]
         if pion:
             x=ligne+(1 if pion.couleur else -1) #x,y: nouvelles positions
@@ -43,8 +44,15 @@ class Game():
                 self.damier[ligne][colonne]=False
         else:
             print('Pas de pion ici')
+    
+    #x,y: position de la pion/dame
+    #nx,ny: nouvelle potition de la pion
+    #return: -1: pas valide; 0: pion avancer ; 1: pion manger; 2:dame déplacer 3: dame manger
+    def juger(self,x,y,nx,n_y)->int:
+        pass
+
 
 game=Game()
 game.affichage()
-game.deplace(3,2,'l')
+game.avance(3,2,'l')
 game.affichage()
