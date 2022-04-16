@@ -56,3 +56,5 @@ game=Game()
 game.affichage()
 game.avance(3,2,'l')
 game.affichage()
+
+#test
