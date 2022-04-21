@@ -52,29 +52,31 @@ class Game():
         """il y a beaucoup de if les uns dans les autres, on pourra simplifier ça une fois que ça marche"""
         #test si la pièce est un pion ou une dame
         pion=self.damier[x][y]
-        print(pion.couleur)
         if not pion.Dame:
             # test si la case d'arrivé est libre
             if not self.damier[n_x][n_y]:
+                av = False
                 #test si il est possible d'y aller en avançant
                 if abs(n_y-y) == 1 and 0<=n_y<10:
-                    if pion.couleur:
-                        print(0 if n_x == x-1 and x>0 else "a")
+                    av=True
+                    if not pion.couleur:
+                        print(0 if n_x == x-1 and x>0 else -1)
                     else:
                         print(0 if n_x == x + 1 and x < 10 else -1)
                 else: print(-1)
                 #test si il est possible d'y aller en mangeant
-                if n_y == y-2 and 0<=n_y<10: #à gauche
-                    if pion.couleur:
-                        print(1 if self.damier[x-1][y-1] else -1)
-                    else:
-                        print(1 if self.damier[x + 1][y - 1] else -1)
-                elif n_y == y+2 and 0<=n_y<10: #à droite
-                    if pion.couleur:
-                        print(1 if self.damier[x-1][y+1] else -1)
-                    else:
-                        print(1 if self.damier[x + 1][y+1] else -1)
-                else : print("b") #attention, ne pas verifier si l'on peut y aller en mangeant si on peut y aller en se déplaçant
+                if not av:
+                    if n_y == y-2 and 0<=n_y<10: #à gauche
+                        if not pion.couleur:
+                            print(1 if self.damier[x-1][y-1] else -1)
+                        else:
+                            print(1 if self.damier[x + 1][y - 1] else -1)
+                    elif n_y == y+2 and 0<=n_y<10: #à droite
+                        if not pion.couleur:
+                            print(1 if self.damier[x-1][y+1] else -1)
+                        else:
+                            print(1 if self.damier[x + 1][y+1] else -1)
+                    else : print("b") #attention, ne pas verifier si l'on peut y aller en mangeant si on peut y aller en se déplaçant
 
 
             else:
