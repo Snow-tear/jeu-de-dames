@@ -65,6 +65,7 @@ class Game():
                         print(0 if n_x == x + 1 and x < 10 else -1)
                 else: print(-1)
                 #test si il est possible d'y aller en mangeant
+                #/!\ prise obligatoire, verifier si il y a une prise possible avant de regarder si on peut avancer
                 if not av:
                     if n_y == y-2 and 0<=n_y<10: #à gauche
                         if not pion.couleur:
@@ -79,8 +80,41 @@ class Game():
                     else : print("b") #attention, ne pas verifier si l'on peut y aller en mangeant si on peut y aller en se déplaçant
 
 
+
             else:
                 print(-1)
+        #on traite le cas des dames
+        else:
+            # test si la case d'arrivé est libre
+            if not self.damier[n_x][n_y]:
+                av = False
+                # test si il est possible d'y aller en avançant
+                diff_x = n_x - x
+                diff_y = n_y - y
+                sign = lambda x: True if x>0 else False
+                if abs(diff_y) == abs(diff_x) and 0<= n_x <10 and 0<= n_y <10: #test si on est sur la diagonale
+                    #test si toutes les cases sur la diagonales sont libre (oui -> avancer, oui sauf l'avant dernière -> manger, non -> pas possible)
+                    free_diagonal = True
+                    xd, yd = x, y
+                    i = 0
+                    while i < abs(diff_x) and free_diagonal:
+                        xd = xd + 1 if diff_x>0 else xd-1
+                        yd = yd + 1 if diff_y > 0 else yd - 1
+                        if self.damier[xd][yd]:
+                            free_diagonal = False
+                    avx = n_x -1 if diff_x>0 else n_x +1
+                    avy = n_y -1 if diff_y>0 else n_y +1
+                    if free_diagonal:
+                        print(2)
+                    elif self.damier[avx][avy]:
+                        print(3)
+                    else:
+                        print(-1)
+
+
+                else:
+                    print(-1)
+
 
 game=Game()
 game.affichage()
