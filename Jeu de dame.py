@@ -98,10 +98,15 @@ class Game():
                     xd, yd = x, y
                     i = 0
                     while i < abs(diff_x) and free_diagonal:
+                        i+=1
                         xd = xd + 1 if diff_x>0 else xd-1
+                        #print(xd)
                         yd = yd + 1 if diff_y > 0 else yd - 1
+                        #print(yd)
+                        #print(i)
                         if self.damier[xd][yd]:
                             free_diagonal = False
+                            #print(i)
                     avx = n_x -1 if diff_x>0 else n_x +1
                     avy = n_y -1 if diff_y>0 else n_y +1
                     if free_diagonal:
@@ -114,6 +119,8 @@ class Game():
 
                 else:
                     print(-1)
+            else:
+                print(-1)
 
 
 game=Game()
