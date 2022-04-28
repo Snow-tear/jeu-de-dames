@@ -19,6 +19,8 @@ class Game():
             for j in range(0+(not i%2),10,2):
                 self.damier[i][j]=Pion(False)
 
+        print('Welcome to jeu de dames!')
+
     def affichage(self):
         print(' ',end='')
         for i in range(10):
@@ -35,17 +37,11 @@ class Game():
                     print("白",end='')
             print()
 
-    def avance(self,ligne:int,colonne:int,sens:str):
-        pion=self.damier[ligne][colonne]
-        if pion:
-            x=ligne+(1 if pion.couleur else -1) #x,y: nouvelles positions
-            y=colonne+(1 if sens=='r' else -1)
-            if not self.damier[x][y]:
-                self.damier[x][y] = pion
-                self.damier[ligne][colonne]=False
-        else:
-            print('Pas de pion ici')
+    def move(self,x:int,y:int,n_x:int,n_y:int):
+        self.damier[n_x][n_y] = self.damier[x][y]
+        self.damier[x][y]=False
     
+
     #x,y: position de la pion/dame
     #nx,ny: nouvelle potition de la pion/dame
     #return: -1: pas valide; 0: déplacer ; 1: manger
@@ -115,9 +111,20 @@ class Game():
             print("vous mangez trop!")
             return -1
 
+    def new_turn(self):
+        print(f"Now is {'Black' if self.tourne else 'White'}'s turn")
+
+        valide_input=False
+        while not valide_input:
+            x,y,n_x,n_y=map(lambda x:int(x),input("Please input the order(x y n_x n_y):\t").split())
+            juge=self.juger(x,y,n_x,n_y)
+            if juge!=-1:valide_input=True
+        self.move(x,y,n_x,n_y)
+
+        self.tourne=not self.tourne
+
 game=Game()
 
-game.affichage()
-game.juger(3,4,4,3)
-game.avance(3,4,'l')
-game.affichage()
+while True:
+    game.affichage()
+    game.new_turn()
