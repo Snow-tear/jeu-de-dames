@@ -6,10 +6,11 @@ class Pion():
 
 
 class Game():
-    damier=[[False for j in range(10)]for i in range(10)]
-    tourne = False  #Noir:True Blanc=False
+    damier=[[False for j in range(10)]for i in range(10)]   #False: Pas de pion sur la case
+    tourne = False  #tourne des joueurs. Noir:True Blanc=False
     def __init__(self) -> None:
-        self.damier[0][1]=Pion(True)
+        
+        #Initialization de damier
         for i in range(4):
             for j in range(0+(not i%2),10,2):
                 self.damier[i][j]=Pion(True)
