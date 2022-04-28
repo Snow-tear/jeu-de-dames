@@ -31,10 +31,16 @@ class Game():
             for case in self.damier[i]:
                 if not case:
                     print("  ",end='')
-                elif case.couleur:
-                    print("黑",end='')
+                elif case.Dame:
+                    if case.couleur:
+                        print("王",end='')
+                    else:
+                        print("玉",end='')
                 else:
-                    print("白",end='')
+                    if case.couleur:
+                        print("黑",end='')
+                    else:
+                        print("白",end='')
             print()
 
     def move(self,x:int,y:int,n_x:int,n_y:int):
@@ -58,7 +64,7 @@ class Game():
         if pion.couleur !=self.tourne:
             print("C'est pas votre pion!")
             return -1
-        if not (0<=n_x<10 and 0<=n_y<10):
+        if not (0<=n_x<10 and 0<=n_y<10 and 0<=x<10 and 0<=y<10):
             print("En dehors de la damier!")
             return -1
         if self.damier[n_x][n_y]:# test si la case d'arrivé est occupée
@@ -121,7 +127,7 @@ class Game():
 
         valide_input=False
         while not valide_input:
-            x,y,n_x,n_y=map(lambda x:int(x),input("Please input the order(x y n_x n_y):\t").split())
+            x,y,n_x,n_y=map(lambda x:int(x),input("Please input the order(x y n_x n_y):\t"))
             juge=self.juger(x,y,n_x,n_y)
             if juge!=-1:valide_input=True
         self.move(x,y,n_x,n_y)
@@ -133,3 +139,5 @@ game=Game()
 while True:
     game.affichage()
     game.new_turn()
+
+#TODO: 目前皇后的移动还有问题,连跳也没做
