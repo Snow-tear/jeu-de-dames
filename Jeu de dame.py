@@ -40,6 +40,9 @@ class Game():
     def move(self,x:int,y:int,n_x:int,n_y:int):
         self.damier[n_x][n_y] = self.damier[x][y]
         self.damier[x][y]=False
+        #Promotion
+        if (self.tourne and n_x == 9) or (not self.tourne and n_x == 0):
+            self.damier[n_x][n_y].Dame=True
     
 
     #x,y: position de la pion/dame
