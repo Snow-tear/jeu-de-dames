@@ -81,6 +81,7 @@ class Game():
                 if not à_manger or à_manger.couleur == self.tourne:
                     print("on peut pas manger!")
                     return -1
+                self.damier[x+diff_x/2][y+diff_y/2] = False
                 return 1 #manger
             
             #le cas dessous est donc quand abs(n_y-y)!=1, ni != 2
@@ -105,6 +106,7 @@ class Game():
             if free_diagonal and not self.damier[avx][avy]:
                 return 0
             if free_diagonal and self.damier[avx][avy].couleur!=self.tourne:
+                self.damier[avx][avy]=False
                 return 1
             
             #le cas dessous est donc soit diagonal n'est pas libre, soit on mange le faux pion
