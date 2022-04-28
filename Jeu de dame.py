@@ -77,11 +77,11 @@ class Game():
                 return 0    #déplacer
             if abs(n_y-y)==2:   #test si il est possible d'y aller en mangeant
             #/!\ prise obligatoire, verifier si il y a une prise possible avant de regarder si on peut avancer
-                à_manger=self.damier[x+diff_x/2][y+diff_y/2]
+                à_manger=self.damier[x+diff_x//2][y+diff_y//2]
                 if not à_manger or à_manger.couleur == self.tourne:
                     print("on peut pas manger!")
                     return -1
-                self.damier[x+diff_x/2][y+diff_y/2] = False
+                self.damier[x+diff_x//2][y+diff_y//2] = False
                 return 1 #manger
             
             #le cas dessous est donc quand abs(n_y-y)!=1, ni != 2
