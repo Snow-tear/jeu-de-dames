@@ -111,13 +111,12 @@ class Game():
                     free_diagonal = False
                 i+=1
 
-            avx = n_x -1 if diff_x>0 else n_x +1
-            avy = n_y -1 if diff_y>0 else n_y +1
+            self.A_manger_x = n_x -1 if diff_x>0 else n_x +1
+            self.A_manger_y = n_y -1 if diff_y>0 else n_y +1
 
-            if free_diagonal and not self.damier[avx][avy]:
+            if free_diagonal and not self.damier[self.A_manger_x][self.A_manger_y]:
                 return 0
-            if free_diagonal and self.damier[avx][avy].couleur!=self.tourne:
-                self.damier[avx][avy]=False
+            if free_diagonal and self.damier[self.A_manger_x][self.A_manger_y].couleur!=self.tourne:
                 return 1
             
             #le cas dessous est donc soit diagonal n'est pas libre, soit on mange le faux pion
@@ -149,14 +148,30 @@ class Game():
 
 game=Game()
 
+
+for i in range(4):
+    for j in range(10):
+        game.damier[i][j]=False
+
+
+game.damier[1][4]=Pion(False)
+game.damier[1][6]=Pion(True)
+game.damier[3][0]=Pion(True)
+
 positions=[
-    '6354','3443','5445'
+    '1405','3041'
 ]
 
 
 for position in positions:
     game.affichage()
     game.new_turn(position)
+
+
+
+
+
+
 
 while True:
     game.affichage()
