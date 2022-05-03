@@ -1,3 +1,5 @@
+import pygame
+
 class Pion():
     Dame=False
     def __init__(self,couleur:bool) -> None:
@@ -22,6 +24,10 @@ class Game():
         print('Welcome to jeu de dames!')
 
     def affichage(self):
+        #affichage graphique
+
+
+        #affichage console
         print(' ',end='')
         for i in range(10):
             print('',i,end='')
@@ -135,9 +141,41 @@ class Game():
         self.tourne=not self.tourne
 
 game=Game()
-
+"""
 while True:
     game.affichage()
     game.new_turn()
-
+"""
 #TODO: 目前皇后的移动还有问题,连跳也没做
+
+pygame.init()
+window = pygame.display.set_mode((500, 500))
+stop = False
+black = (93, 45, 23)
+white = (229, 177, 119)
+pawn = lambda image: pygame.transform.scale(pygame.image.load(str(image)).convert_alpha(), (50, 50))
+white_pawn = pawn("shrek.png")
+black_pawn = pawn("risitas.png")
+
+def draw_checkerboard():
+    for i in range(10):
+        for j in range(10):
+            square = pygame.Rect(i * 50, j * 50, 50, 50)
+            pygame.draw.rect(window, white if (i + j) % 2 == 0 else black, square)
+def draw_pawns():
+    for x in range(10):
+        for y in range(10):
+            if game.damier[x][y]:
+                pawn_display = window.blit(black_pawn if game.damier[x][y].couleur else white_pawn, (y * 50, x * 50))
+
+while not stop:
+    pygame.display.flip()
+    for event in pygame.event.get():
+        draw_checkerboard()
+        draw_pawns()
+
+
+        if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+            stop = True
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            print(event.pos)  # coordonnées du clique
