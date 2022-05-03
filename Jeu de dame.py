@@ -86,11 +86,13 @@ class Game():
                 return 0    #déplacer
             if abs(n_y-y)==2:   #test si il est possible d'y aller en mangeant
             #/!\ prise obligatoire, verifier si il y a une prise possible avant de regarder si on peut avancer
-                à_manger=self.damier[x+diff_x//2][y+diff_y//2]
-                if not à_manger or à_manger.couleur == self.tourne:
+                pion_manger=self.damier[x+diff_x//2][y+diff_y//2]
+                if not pion_manger or pion_manger.couleur == self.tourne:
                     print("on peut pas manger!")
                     return -1
-                self.damier[x+diff_x//2][y+diff_y//2] = False
+                self.A_manger_x=x+diff_x//2
+                self.A_manger_y=y+diff_y//2
+
                 return 1 #manger
             
             #le cas dessous est donc quand abs(n_y-y)!=1, ni != 2
@@ -122,19 +124,39 @@ class Game():
             print("vous mangez trop!")
             return -1
 
-    def new_turn(self):
+    def new_turn(self,positions=''):
+        self.A_manger_x=False
+        self.A_manger_y=False
         print(f"Now is {'Black' if self.tourne else 'White'}'s turn")
 
-        valide_input=False
-        while not valide_input:
-            x,y,n_x,n_y=map(lambda x:int(x),input("Please input the order(x y n_x n_y):\t"))
-            juge=self.juger(x,y,n_x,n_y)
-            if juge!=-1:valide_input=True
+        if positions=='':
+
+            valide_input=False
+            while not valide_input:
+                x,y,n_x,n_y=map(lambda x:int(x),input("Please input the order(x y n_x n_y):\t"))
+                juge=self.juger(x,y,n_x,n_y)
+                if juge!=-1:valide_input=True
+        else:
+            x,y,n_x,n_y=map(lambda x:int(x),positions)
+
+        #enlever le pion mangé!
+        if self.A_manger_x:
+            self.damier[self.A_manger_x][self.A_manger_y]=False
+
         self.move(x,y,n_x,n_y)
 
         self.tourne=not self.tourne
 
 game=Game()
+
+positions=[
+    '6354','3443','5445'
+]
+
+
+for position in positions:
+    game.affichage()
+    game.new_turn(position)
 
 while True:
     game.affichage()
