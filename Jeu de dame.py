@@ -54,6 +54,7 @@ class Game():
     #x,y: position de la pion/dame
     #nx,ny: nouvelle potition de la pion/dame
     #return: -1: pas valide; 0: déplacer ; 1: manger
+    #metre la position du pion à manger
     def juger(self,x:int,y:int,n_x:int,n_y:int)->int:
         """il y a beaucoup de if les uns dans les autres, on pourra simplifier ça une fois que ça marche"""
         pion=self.damier[x][y]
@@ -167,5 +168,3 @@ positions=[
 while True:
     game.affichage()
     game.new_turn()
-
-#TODO: 目前皇后的移动还有问题,连跳也没做
