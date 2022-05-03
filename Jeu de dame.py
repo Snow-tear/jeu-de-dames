@@ -148,19 +148,19 @@ class Game():
 
 game=Game()
 
-
-for i in range(4):
+'''
+for i in range(6,10):
     for j in range(10):
         game.damier[i][j]=False
 
 
-game.damier[1][4]=Pion(False)
-game.damier[1][6]=Pion(True)
-game.damier[3][0]=Pion(True)
+game.damier[8][4]=Pion(True)
+game.damier[8][6]=Pion(False)
+game.damier[6][0]=Pion(False)
 
 positions=[
-    '1405','3041'
-]
+    
+]'''
 
 
 for position in positions:
