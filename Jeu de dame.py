@@ -163,15 +163,6 @@ positions=[
 ]'''
 
 
-for position in positions:
-    game.affichage()
-    game.new_turn(position)
-
-
-
-
-
-
 
 while True:
     game.affichage()
