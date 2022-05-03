@@ -157,7 +157,9 @@ class Game():
                 juge=self.juger(x,y,n_x,n_y)
                 if juge==-1:
                     print(self.error_message)
-                else:    
+                elif juge==0 and self.A_manger_x and not self.damier[x][y].Dame:
+                    print('Il faut à un pion manger!!!!!')
+                else:
                     valide_input=True
         else: #c'est pour débuggage
             x,y,n_x,n_y=map(lambda x:int(x),positions)
