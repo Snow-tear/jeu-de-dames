@@ -1,3 +1,4 @@
+from turtle import color
 import pygame
 
 class Pion():
@@ -6,13 +7,18 @@ class Pion():
         self.couleur=couleur    #Noir:True Blanc=False
 
 
-
 class Game():
     damier=[[False for j in range(10)]for i in range(10)]   #False: Pas de pion sur la case
     tourne = False  #tourne des joueurs. Noir:True Blanc=False
     error_message=''
+    colors={
+            'black':(93, 45, 23),
+            'white':(229, 177, 119)
+        }
 
     def __init__(self) -> None:
+
+        
 
         #Initialization de damier
         for i in range(4):
@@ -25,11 +31,15 @@ class Game():
 
         print('Welcome to jeu de dames!')
 
-    def affichage(self):
-        #affichage graphique
+        #Initialization de GUI
+        pygame.init()
+        self.window = pygame.display.set_mode((500, 500))
+        pawn = lambda image: pygame.transform.scale(pygame.image.load(image).convert_alpha(), (50, 50))
+        self.white_pawn_icon = pawn("shrek.png")
+        self.black_pawn_icon = pawn("risitas.png")
 
+    def affichage(self):#affichage console
 
-        #affichage console
         print(' ',end='')
         for i in range(10):
             print('',i,end='')
@@ -135,7 +145,6 @@ class Game():
             self.error_message="vous mangez trop!"
             return -1
 
-
     #le pion doit obligatoiremant manger si c'est possible
     def detect_manger(self):
         for x in range(10):
@@ -145,8 +154,6 @@ class Game():
                         for n_y in range(10):
                             if self.juger(x,y,n_x,n_y)==1:
                                 break
-
-
 
     def new_turn(self,positions=''):
         self.A_manger_x=False
@@ -178,38 +185,36 @@ class Game():
 
         self.tourne=not self.tourne
 
+    def affichage_gui(self):
+        #draw checkerboard
+        for i in range(10):
+            for j in range(10):
+                square = pygame.Rect(i * 50, j * 50, 50, 50)
+                pygame.draw.rect(self.window, self.colors['white'] if (i + j) % 2 == 0 else self.colors['black'], square)
+
+        #draw pawns
+        for x in range(10):
+                for y in range(10):
+                    if self.damier[x][y]:
+                        pawn_display = self.window.blit(self.black_pawn_icon if game.damier[x][y].couleur else self.white_pawn_icon, (y * 50, x * 50))
+
+
 game=Game()
+
+
 """
 while True:
     game.affichage()
     game.new_turn()
 """
 
-pygame.init()
-window = pygame.display.set_mode((500, 500))
 stop = False
-black = (93, 45, 23)
-white = (229, 177, 119)
-pawn = lambda image: pygame.transform.scale(pygame.image.load(str(image)).convert_alpha(), (50, 50))
-white_pawn = pawn("shrek.png")
-black_pawn = pawn("risitas.png")
-
-def draw_checkerboard():
-    for i in range(10):
-        for j in range(10):
-            square = pygame.Rect(i * 50, j * 50, 50, 50)
-            pygame.draw.rect(window, white if (i + j) % 2 == 0 else black, square)
-def draw_pawns():
-    for x in range(10):
-        for y in range(10):
-            if game.damier[x][y]:
-                pawn_display = window.blit(black_pawn if game.damier[x][y].couleur else white_pawn, (y * 50, x * 50))
-
 while not stop:
+
     pygame.display.flip()
     for event in pygame.event.get():
-        draw_checkerboard()
-        draw_pawns()
+        game.affichage()
+        game.affichage_gui()
 
 
         if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
