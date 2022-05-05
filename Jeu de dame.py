@@ -161,7 +161,7 @@ class Game():
                             if self.juger(x,y,n_x,n_y)==1:
                                 break
 
-    def new_turn(self,x,y,n_x,n_y):
+    def new_action(self,x,y,n_x,n_y):
         valide_input=False
         self.A_manger_x=False
         self.A_manger_y=False
@@ -177,11 +177,19 @@ class Game():
             valide_input=True
 
         if valide_input:
+            self.move(x,y,n_x,n_y)
             #enlever le pion mangé!
             if self.A_manger_x:
                 self.damier[self.A_manger_x][self.A_manger_y]=False
-            self.move(x,y,n_x,n_y)
-            self.tourne=not self.tourne
+                self.A_manger_x=False
+                self.A_manger_y=False
+                self.detect_manger()
+                if self.A_manger_x:
+                    print("continue to eat!!")
+                else:
+                    self.tourne=not self.tourne
+            else:
+                self.tourne=not self.tourne
 
     def affichage_gui(self):
         #draw checkerboard
@@ -227,6 +235,6 @@ while not stop:
             else:
                 x_n,y_n=event.pos[1]//game.case_size,event.pos[0]//game.case_size
                 print(x,y,x_n,y_n)
-                game.new_turn(x,y,x_n,y_n)
-                game.affichage
+                game.new_action(x,y,x_n,y_n)
+                game.affichage()
                 selected=False
