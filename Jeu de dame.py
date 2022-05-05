@@ -184,7 +184,6 @@ while True:
     game.affichage()
     game.new_turn()
 """
-#TODO: 目前皇后的移动还有问题,连跳也没做
 
 pygame.init()
 window = pygame.display.set_mode((500, 500))
