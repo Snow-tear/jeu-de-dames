@@ -8,6 +8,8 @@ class Pion():
 class Game():
     damier=[[False for j in range(10)]for i in range(10)]   #False: Pas de pion sur la case
     tourne = False  #tourne des joueurs. Noir:True Blanc=False
+    error_message=''
+
     def __init__(self) -> None:
 
         #Initialization de damier
@@ -42,6 +44,9 @@ class Game():
                     else:
                         print("白",end='')
             print()
+        print(f"Now is {'Black' if self.tourne else 'White'}'s turn")
+
+
 
     def move(self,x:int,y:int,n_x:int,n_y:int):
         self.damier[n_x][n_y] = self.damier[x][y]
@@ -54,47 +59,50 @@ class Game():
     #x,y: position de la pion/dame
     #nx,ny: nouvelle potition de la pion/dame
     #return: -1: pas valide; 0: déplacer ; 1: manger
+    #metre la position du pion à manger
     def juger(self,x:int,y:int,n_x:int,n_y:int)->int:
         """il y a beaucoup de if les uns dans les autres, on pourra simplifier ça une fois que ça marche"""
         pion=self.damier[x][y]
 
         if not pion:
-            print('Pas de pion ici')
+            self.error_message='Pas de pion ici'
             return -1
         if pion.couleur !=self.tourne:
-            print("C'est pas votre pion!")
+            self.error_message="C'est pas votre pion!"
             return -1
         if not (0<=n_x<10 and 0<=n_y<10 and 0<=x<10 and 0<=y<10):
-            print("En dehors de la damier!")
+            self.error_message="En dehors de la damier!"
             return -1
         if self.damier[n_x][n_y]:# test si la case d'arrivé est occupée
-            print("déjà un pion/une dame ici")
+            self.error_message="déjà un pion/une dame ici"
             return -1
 
         diff_x = n_x - x
         diff_y = n_y - y
         if abs(diff_y) != abs(diff_x):
-            print("Diagonale svp!")
+            self.error_message="Diagonale svp!"
             return -1
 
         
         if not pion.Dame: #on traite le cas des pions
             if (pion.couleur and diff_x<0) or (not pion.couleur and diff_x>0):
-                print("un pion ne peut pas aller en arrière")
+                self.error_message="un pion ne peut pas aller en arrière"
                 return -1
             if abs(n_y-y) == 1: #test si il est possible d'y aller en avançant
                 return 0    #déplacer
             if abs(n_y-y)==2:   #test si il est possible d'y aller en mangeant
             #/!\ prise obligatoire, verifier si il y a une prise possible avant de regarder si on peut avancer
-                à_manger=self.damier[x+diff_x//2][y+diff_y//2]
-                if not à_manger or à_manger.couleur == self.tourne:
-                    print("on peut pas manger!")
+                pion_manger=self.damier[x+diff_x//2][y+diff_y//2]
+                if not pion_manger or pion_manger.couleur == self.tourne:
+                    self.error_message="on peut pas manger!"
                     return -1
-                self.damier[x+diff_x//2][y+diff_y//2] = False
+                self.A_manger_x=x+diff_x//2
+                self.A_manger_y=y+diff_y//2
+
                 return 1 #manger
             
             #le cas dessous est donc quand abs(n_y-y)!=1, ni != 2
-            print("un pion ne peut pas aller si loin")
+            self.error_message="un pion ne peut pas aller si loin"
             return -1
         
         else: #on traite le cas des dames
@@ -109,35 +117,79 @@ class Game():
                     free_diagonal = False
                 i+=1
 
-            avx = n_x -1 if diff_x>0 else n_x +1
-            avy = n_y -1 if diff_y>0 else n_y +1
+            self.A_manger_x = n_x -1 if diff_x>0 else n_x +1
+            self.A_manger_y = n_y -1 if diff_y>0 else n_y +1
 
-            if free_diagonal and not self.damier[avx][avy]:
+            if free_diagonal and not self.damier[self.A_manger_x][self.A_manger_y]:
                 return 0
-            if free_diagonal and self.damier[avx][avy].couleur!=self.tourne:
-                self.damier[avx][avy]=False
+            if free_diagonal and self.damier[self.A_manger_x][self.A_manger_y].couleur!=self.tourne:
                 return 1
             
             #le cas dessous est donc soit diagonal n'est pas libre, soit on mange le faux pion
-            print("vous mangez trop!")
+            self.error_message="vous mangez trop!"
             return -1
 
-    def new_turn(self):
-        print(f"Now is {'Black' if self.tourne else 'White'}'s turn")
 
-        valide_input=False
-        while not valide_input:
-            x,y,n_x,n_y=map(lambda x:int(x),input("Please input the order(x y n_x n_y):\t"))
-            juge=self.juger(x,y,n_x,n_y)
-            if juge!=-1:valide_input=True
+    #le pion doit obligatoiremant manger si c'est possible
+    def detect_manger(self):
+        for x in range(10):
+            for y in range(10):
+                if self.damier[x][y] and self.damier[x][y].couleur==self.tourne:
+                    for n_x in range(10):
+                        for n_y in range(10):
+                            if self.juger(x,y,n_x,n_y)==1:
+                                break
+
+
+
+    def new_turn(self,positions=''):
+        self.A_manger_x=False
+        self.A_manger_y=False
+        
+        self.detect_manger()
+
+
+        if positions=='': 
+
+            valide_input=False
+            while not valide_input:
+                x,y,n_x,n_y=map(lambda x:int(x),input("Please input the order(x y n_x n_y):\t"))
+                juge=self.juger(x,y,n_x,n_y)
+                if juge==-1:
+                    print(self.error_message)
+                elif juge==0 and self.A_manger_x and not self.damier[x][y].Dame:
+                    print('Il faut à un pion manger!!!!!')
+                else:
+                    valide_input=True
+        else: #c'est pour débuggage
+            x,y,n_x,n_y=map(lambda x:int(x),positions)
+
+        #enlever le pion mangé!
+        if self.A_manger_x:
+            self.damier[self.A_manger_x][self.A_manger_y]=False
+
         self.move(x,y,n_x,n_y)
 
         self.tourne=not self.tourne
 
 game=Game()
 
+'''
+for i in range(6,10):
+    for j in range(10):
+        game.damier[i][j]=False
+
+
+game.damier[8][4]=Pion(True)
+game.damier[8][6]=Pion(False)
+game.damier[6][0]=Pion(False)
+
+positions=[
+    
+]'''
+
+
+
 while True:
     game.affichage()
     game.new_turn()
-
-#TODO: 目前皇后的移动还有问题,连跳也没做
