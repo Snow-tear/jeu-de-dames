@@ -16,7 +16,7 @@ class Game():
             'white':(229, 177, 119)
         }
     
-    window_size=720 #window's size in pixel
+    window_size=700 #window's size in pixel
 
     def __init__(self) -> None:
 
@@ -32,6 +32,7 @@ class Game():
                 self.damier[i][j]=Pion(False)
 
         print('Welcome to jeu de dames!')
+        self.affichage()
 
         #Initialization de GUI
         pygame.init()
@@ -126,6 +127,7 @@ class Game():
             return -1
         
         else: #on traite le cas des dames
+            if abs(diff_x)==1:return 0
             #test si toutes les cases sur la diagonales sont libre (oui -> avancer, oui sauf l'avant dernière -> manger, non -> pas possible)
             free_diagonal = True #la diagonal entre x,y (non compris) et l'avant dernière(non compris)
             xd, yd = x, y
@@ -159,35 +161,27 @@ class Game():
                             if self.juger(x,y,n_x,n_y)==1:
                                 break
 
-    def new_turn(self,positions=''):
+    def new_turn(self,x,y,n_x,n_y):
+        valide_input=False
         self.A_manger_x=False
         self.A_manger_y=False
-        
+
         self.detect_manger()
+ 
+        juge=self.juger(x,y,n_x,n_y)
+        if juge==-1:
+            print(self.error_message)
+        elif juge==0 and self.A_manger_x and not self.damier[x][y].Dame:
+            print('Il faut à un pion manger!!!!!')
+        else:
+            valide_input=True
 
-
-        if positions=='': 
-
-            valide_input=False
-            while not valide_input:
-                x,y,n_x,n_y=map(lambda x:int(x),input("Please input the order(x y n_x n_y):\t"))
-                juge=self.juger(x,y,n_x,n_y)
-                if juge==-1:
-                    print(self.error_message)
-                elif juge==0 and self.A_manger_x and not self.damier[x][y].Dame:
-                    print('Il faut à un pion manger!!!!!')
-                else:
-                    valide_input=True
-        else: #c'est pour débuggage
-            x,y,n_x,n_y=map(lambda x:int(x),positions)
-
-        #enlever le pion mangé!
-        if self.A_manger_x:
-            self.damier[self.A_manger_x][self.A_manger_y]=False
-
-        self.move(x,y,n_x,n_y)
-
-        self.tourne=not self.tourne
+        if valide_input:
+            #enlever le pion mangé!
+            if self.A_manger_x:
+                self.damier[self.A_manger_x][self.A_manger_y]=False
+            self.move(x,y,n_x,n_y)
+            self.tourne=not self.tourne
 
     def affichage_gui(self):
         #draw checkerboard
@@ -209,10 +203,12 @@ game=Game()
 """
 while True:
     game.affichage()
-    game.new_turn()
+    x,y,n_x,n_y=map(lambda x:int(x),input("Please input the order(x y n_x n_y):\t"))
+    game.new_turn(x,y,n_x,n_y)
 """
 
 stop = False
+selected=False
 while not stop:
 
     pygame.display.flip()
@@ -224,4 +220,13 @@ while not stop:
         if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
             stop = True
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            print(event.pos)  # coordonnées du clique
+            #print(event.pos)  # coordonnées du clique
+            if not selected:
+                x,y=event.pos[1]//game.case_size,event.pos[0]//game.case_size
+                selected=True
+            else:
+                x_n,y_n=event.pos[1]//game.case_size,event.pos[0]//game.case_size
+                print(x,y,x_n,y_n)
+                game.new_turn(x,y,x_n,y_n)
+                game.affichage
+                selected=False
