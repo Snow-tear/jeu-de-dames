@@ -15,6 +15,8 @@ class Game():
             'black':(93, 45, 23),
             'white':(229, 177, 119)
         }
+    
+    window_size=720 #window's size in pixel
 
     def __init__(self) -> None:
 
@@ -33,10 +35,15 @@ class Game():
 
         #Initialization de GUI
         pygame.init()
-        self.window = pygame.display.set_mode((500, 500))
-        pawn = lambda image: pygame.transform.scale(pygame.image.load(image).convert_alpha(), (50, 50))
-        self.white_pawn_icon = pawn("shrek.png")
-        self.black_pawn_icon = pawn("risitas.png")
+        self.case_size=self.window_size//10
+        self.window_size=self.case_size*10
+        self.window = pygame.display.set_mode((self.window_size, self.window_size))
+
+        pawn = lambda image: pygame.transform.scale(pygame.image.load(image).convert_alpha(), (self.case_size, self.case_size))
+        self.icon=dict(zip(
+            ('white pawn','black pawn'),
+            map(pawn,("shrek.png","risitas.png"))
+        ))
 
     def affichage(self):#affichage console
 
@@ -62,8 +69,6 @@ class Game():
             print()
         print(f"Now is {'Black' if self.tourne else 'White'}'s turn")
 
-
-
     def move(self,x:int,y:int,n_x:int,n_y:int):
         self.damier[n_x][n_y] = self.damier[x][y]
         self.damier[x][y]=False
@@ -71,7 +76,6 @@ class Game():
         if (self.tourne and n_x == 9) or (not self.tourne and n_x == 0):
             self.damier[n_x][n_y].Dame=True
     
-
     #x,y: position de la pion/dame
     #nx,ny: nouvelle potition de la pion/dame
     #return: -1: pas valide; 0: déplacer ; 1: manger
@@ -189,14 +193,14 @@ class Game():
         #draw checkerboard
         for i in range(10):
             for j in range(10):
-                square = pygame.Rect(i * 50, j * 50, 50, 50)
+                square = pygame.Rect(i * self.case_size, j * self.case_size, self.case_size, self.case_size)
                 pygame.draw.rect(self.window, self.colors['white'] if (i + j) % 2 == 0 else self.colors['black'], square)
 
         #draw pawns
         for x in range(10):
                 for y in range(10):
                     if self.damier[x][y]:
-                        pawn_display = self.window.blit(self.black_pawn_icon if game.damier[x][y].couleur else self.white_pawn_icon, (y * 50, x * 50))
+                        pawn_display = self.window.blit(self.icon['black pawn'] if game.damier[x][y].couleur else self.icon['white pawn'], (y * self.case_size, x * self.case_size))
 
 
 game=Game()
@@ -213,7 +217,7 @@ while not stop:
 
     pygame.display.flip()
     for event in pygame.event.get():
-        game.affichage()
+        #game.affichage()
         game.affichage_gui()
 
 
