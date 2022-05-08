@@ -46,8 +46,8 @@ class Game():
 
         pawn = lambda image: pygame.transform.scale(pygame.image.load(image).convert_alpha(), (self.case_size, self.case_size))
         self.icon=dict(zip(
-            ('white pawn','black pawn'),
-            map(pawn,("shrek.png","risitas.png"))
+            ('white pawn','black pawn', 'white king', 'black king'),
+            map(pawn,("shrek.png","risitas.png", "fiona.png", "stonks.png"))
         ))
 
     def affichage(self):#affichage console
@@ -206,7 +206,18 @@ class Game():
         for x in range(10):
                 for y in range(10):
                     if self.damier[x][y]:
-                        pawn_display = self.window.blit(self.icon['black pawn'] if game.damier[x][y].couleur else self.icon['white pawn'], (y * self.case_size, x * self.case_size))
+                        if game.damier[x][y].couleur:
+                            if game.damier[x][y].Dame:
+                                pawn_shape = self.icon['black king']
+                            else:
+                                pawn_shape = self.icon['black pawn']
+                        else:
+                            if game.damier[x][y].Dame:
+                                pawn_shape = self.icon['white king']
+                            else:
+                                pawn_shape = self.icon['white pawn']
+
+                        pawn_display = self.window.blit(pawn_shape, (y * self.case_size, x * self.case_size))
         #message display
         bg = pygame.Rect(self.window_size, 0, 0.75*self.window_size,self.window_size)
         pygame.draw.rect(self.window, self.colors['bg_color'], bg)
