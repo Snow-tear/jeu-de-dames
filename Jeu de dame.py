@@ -8,12 +8,16 @@ class Pion():
 
 
 class Game():
+    message = ""
+    turn = ""
     damier=[[False for j in range(10)]for i in range(10)]   #False: Pas de pion sur la case
     tourne = False  #tourne des joueurs. Noir:True Blanc=False
     error_message=''
     colors={
             'black':(93, 45, 23),
-            'white':(229, 177, 119)
+            'white':(229, 177, 119),
+            'txt_white':(255, 255, 255),
+            'bg_color':(29, 142, 48)
         }
     
     window_size=700 #window's size in pixel
@@ -31,14 +35,14 @@ class Game():
             for j in range(0+(not i%2),10,2):
                 self.damier[i][j]=Pion(False)
 
-        print('Welcome to jeu de dames!')
+        self.message = 'Welcome to jeu de dames!'
         self.affichage()
 
         #Initialization de GUI
         pygame.init()
         self.case_size=self.window_size//10
         self.window_size=self.case_size*10
-        self.window = pygame.display.set_mode((self.window_size, self.window_size))
+        self.window = pygame.display.set_mode((self.window_size*1.75, self.window_size))
 
         pawn = lambda image: pygame.transform.scale(pygame.image.load(image).convert_alpha(), (self.case_size, self.case_size))
         self.icon=dict(zip(
@@ -68,7 +72,7 @@ class Game():
                     else:
                         print("白",end='')
             print()
-        print(f"Now is {'Black' if self.tourne else 'White'}'s turn")
+        self.turn = f"Now is {'Black' if self.tourne else 'White'}'s turn"
 
     def move(self,x:int,y:int,n_x:int,n_y:int):
         self.damier[n_x][n_y] = self.damier[x][y]
@@ -172,7 +176,7 @@ class Game():
         if juge==-1:
             print(self.error_message)
         elif juge==0 and self.A_manger_x and not self.damier[x][y].Dame:
-            print('Il faut à un pion manger!!!!!')
+            self.error_message='Il faut à un pion manger!!!!!'
         else:
             valide_input=True
 
@@ -185,7 +189,7 @@ class Game():
                 self.A_manger_y=False
                 self.detect_manger()
                 if self.A_manger_x:
-                    print("continue to eat!!")
+                    self.error_message="continue to eat!!"
                 else:
                     self.tourne=not self.tourne
             else:
@@ -203,6 +207,9 @@ class Game():
                 for y in range(10):
                     if self.damier[x][y]:
                         pawn_display = self.window.blit(self.icon['black pawn'] if game.damier[x][y].couleur else self.icon['white pawn'], (y * self.case_size, x * self.case_size))
+        #message display
+        bg = pygame.Rect(self.window_size, 0, 0.75*self.window_size,self.window_size)
+        pygame.draw.rect(self.window, self.colors['bg_color'], bg)
 
 
 game=Game()
@@ -217,12 +224,17 @@ while True:
 
 stop = False
 selected=False
+text_font = pygame.font.Font("DancingScript.ttf", 50)
 while not stop:
 
     pygame.display.flip()
     for event in pygame.event.get():
         #game.affichage()
         game.affichage_gui()
+        turn_print = text_font.render(game.turn, True, (255, 255, 255))
+        game.window.blit(turn_print, (715, 15))
+        message_print = text_font.render(game.error_message, True, (255, 255, 255))
+        game.window.blit(message_print, (715,80))
 
 
         if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
