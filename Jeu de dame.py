@@ -21,7 +21,7 @@ class Game():
             'bg_color':(29, 142, 48)
         }
     
-    window_size=400 #window's size in pixel
+    window_size=700 #window's size in pixel
 
     def __init__(self) -> None:
 
@@ -82,7 +82,6 @@ class Game():
         #Promotion
         if (self.tourne and n_x == 9) or (not self.tourne and n_x == 0):
             self.damier[n_x][n_y].Dame=True
-            self.mode_repas['activé']=False
     
     def test_pion_manger(self,x,y):
         return 1 in [self.juger(x,y,x+dx,y+dy) for dx in (-2,2) for dy in (-2,2)]
@@ -149,6 +148,9 @@ class Game():
             return -1
         
         else: #on traite le cas des dames
+            if self.mes_pions_peuvent_manger():
+                self.error_message='Il faut à un pion manger!!!!!'
+                return -1
             if abs(diff_x)==1:return 0
             #test si toutes les cases sur la diagonales sont libre (oui -> avancer, oui sauf l'avant dernière -> manger, non -> pas possible)
             free_diagonal = True #la diagonal entre x,y (non compris) et l'avant dernière(non compris)
@@ -176,8 +178,9 @@ class Game():
     def mes_pions_peuvent_manger(self):
         for x in range(10):
             for y in range(10):
-                if self.test_pion_manger(x,y):
-                    return True
+                if self.damier[x][y]:
+                    if not self.damier[x][y].Dame and self.test_pion_manger(x,y):
+                        return True
         return False
 
     def new_action(self,x,y,n_x,n_y):
@@ -191,7 +194,7 @@ class Game():
             self.move(x,y,n_x,n_y)
             if juge==1: #cas de manger
                 self.damier[self.A_manger_x][self.A_manger_y]=False #enlever le pion mangé!
-                if self.test_pion_manger(n_x,n_y):
+                if not self.damier[n_x][n_y].Dame and self.test_pion_manger(n_x,n_y):
                     self.mode_repas['activé']=True
                     self.mode_repas['x']=n_x
                     self.mode_repas['y']=n_y
@@ -201,6 +204,8 @@ class Game():
                     self.tourne=not self.tourne
             else:   #cas de déplacement
                 self.tourne=not self.tourne
+            
+
             
 
     def affichage_gui(self):
