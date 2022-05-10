@@ -235,7 +235,8 @@ while True:
 
 stop = False
 selected=False
-text_font = pygame.font.Font("DancingScript.ttf", 50)
+text_font = pygame.font.Font("DancingScript.ttf", int(game.case_size*0.71))
+margin = int(0.02 *game.window_size)
 while not stop:
 
     pygame.display.flip()
@@ -243,9 +244,9 @@ while not stop:
         #game.affichage()
         game.affichage_gui()
         turn_print = text_font.render(game.turn, True, (255, 255, 255))
-        game.window.blit(turn_print, (715, 15))
+        game.window.blit(turn_print, (game.window_size + margin, margin))
         message_print = text_font.render(game.error_message, True, (255, 255, 255))
-        game.window.blit(message_print, (715,80))
+        game.window.blit(message_print, (game.window_size + margin,margin*5.33))
 
 
         if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
