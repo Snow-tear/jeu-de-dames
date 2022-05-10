@@ -21,7 +21,7 @@ class Game():
             'bg_color':(29, 142, 48)
         }
     
-    window_size=700 #window's size in pixel
+    window_size=400 #window's size in pixel
 
     def __init__(self) -> None:
 
@@ -210,6 +210,7 @@ class Game():
                 square = pygame.Rect(i * self.case_size, j * self.case_size, self.case_size, self.case_size)
                 pygame.draw.rect(self.window, self.colors['white'] if (i + j) % 2 == 0 else self.colors['black'], square)
 
+
         #draw pawns
         for x in range(10):
                 for y in range(10):
@@ -225,7 +226,7 @@ class Game():
                             else:
                                 pawn_shape = self.icon['white pawn']
 
-                        pawn_display = self.window.blit(pawn_shape, (y * self.case_size, x * self.case_size))
+                        self.pawn_display = self.window.blit(pawn_shape, (y * self.case_size, x * self.case_size))
         #message display
         bg = pygame.Rect(self.window_size, 0, 0.75*self.window_size,self.window_size)
         pygame.draw.rect(self.window, self.colors['bg_color'], bg)
@@ -243,7 +244,8 @@ while True:
 
 stop = False
 selected=False
-text_font = pygame.font.Font("DancingScript.ttf", 50)
+text_font = pygame.font.Font("DancingScript.ttf", int(game.case_size*0.71))
+margin = int(0.02 *game.window_size)
 while not stop:
 
     pygame.display.flip()
@@ -251,9 +253,9 @@ while not stop:
         #game.affichage()
         game.affichage_gui()
         turn_print = text_font.render(game.turn, True, (255, 255, 255))
-        game.window.blit(turn_print, (715, 15))
+        game.window.blit(turn_print, (game.window_size + margin, margin))
         message_print = text_font.render(game.error_message, True, (255, 255, 255))
-        game.window.blit(message_print, (715,80))
+        game.window.blit(message_print, (game.window_size + margin,margin*5.33))
 
 
         if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
@@ -269,3 +271,11 @@ while not stop:
                 game.new_action(x,y,x_n,y_n)
                 game.affichage()
                 selected=False
+        coordonnes_souris = pygame.mouse.get_pos()
+        x_mouse, y_mouse = coordonnes_souris[1] // game.case_size,coordonnes_souris[0] // game.case_size
+        if x_mouse < 10 and y_mouse < 10:
+            if game.damier[x_mouse][y_mouse]:
+                if game.tourne == game.damier[x_mouse][y_mouse].couleur:
+                    image = game.icon['white king']
+                    image.fill((255, 255, 255, 128))
+                    game.pawn_display = game.window.blit(image, (y_mouse*game.case_size, x_mouse*game.case_size))
