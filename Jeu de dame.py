@@ -10,7 +10,7 @@ class Pion():
 class Game():
     message = ""
     turn = ""
-    mode_repas = False #s'il faut à un pion condinuellement manger
+    mode_repas = {'activé':False} #s'il faut à un pion condinuellement manger
     damier=[[False for j in range(10)]for i in range(10)]   #False: Pas de pion sur la case
     tourne = False  #tourne des joueurs. Noir:True Blanc=False
     error_message=''
@@ -82,6 +82,7 @@ class Game():
         #Promotion
         if (self.tourne and n_x == 9) or (not self.tourne and n_x == 0):
             self.damier[n_x][n_y].Dame=True
+            self.mode_repas['activé']=False
     
     def test_pion_manger(self,x,y):
         return 1 in [self.juger(x,y,x+dx,y+dy) for dx in (-2,2) for dy in (-2,2)]
@@ -92,18 +93,19 @@ class Game():
     #metre la position du pion à manger
     def juger(self,x:int,y:int,n_x:int,n_y:int)->int:
         """il y a beaucoup de if les uns dans les autres, on pourra simplifier ça une fois que ça marche"""
-        pion=self.damier[x][y]
-
+        
         #les cassgénérals, quelque soit pion ou dame
+        if not (0<=n_x<10 and 0<=n_y<10 and 0<=x<10 and 0<=y<10):
+            self.error_message="En dehors de la damier!"
+            return -1
+        pion=self.damier[x][y]
         if not pion:
             self.error_message='Pas de pion ici'
             return -1
         if pion.couleur !=self.tourne:
             self.error_message="C'est pas votre pion!"
             return -1
-        if not (0<=n_x<10 and 0<=n_y<10 and 0<=x<10 and 0<=y<10):
-            self.error_message="En dehors de la damier!"
-            return -1
+        
         if self.damier[n_x][n_y]:# test si la case d'arrivé est occupée
             self.error_message="déjà un pion/une dame ici"
             return -1
@@ -120,13 +122,19 @@ class Game():
                 self.error_message="un pion ne peut pas aller en arrière"
                 return -1
             if abs(n_y-y) == 1: #test si il est possible d'y aller en avançant
+                if self.mode_repas['activé']:
+                    self.error_message='continuer à manger!'
                 #le pion doit obligatoiremant manger si c'est possible
-                if self.mes_pions_peuvent_manger():
+                elif self.mes_pions_peuvent_manger():
                     self.error_message='Il faut à un pion manger!!!!!'
                     return -1
                 else:
                     return 0    #déplacer
             if abs(n_y-y)==2:   #test si il est possible d'y aller en mangeant
+                if self.mode_repas['activé']:
+                    if self.mode_repas['x']!=x or self.mode_repas['y']!=y:
+                        self.error_message='il faut à un MÊME pion continuer à manger!'
+                        return -1
             #/!\ prise obligatoire, verifier si il y a une prise possible avant de regarder si on peut avancer
                 pion_manger=self.damier[x+diff_x//2][y+diff_y//2]
                 if not pion_manger or pion_manger.couleur == self.tourne:
@@ -173,7 +181,6 @@ class Game():
         return False
 
     def new_action(self,x,y,n_x,n_y):
-        valide_input=False
         self.A_manger_x=False
         self.A_manger_y=False
  
@@ -182,12 +189,19 @@ class Game():
             print(self.error_message)
         else:
             self.move(x,y,n_x,n_y)
-            #enlever le pion mangé!
-            if juge==1:
-                self.damier[self.A_manger_x][self.A_manger_y]=False
-
+            if juge==1: #cas de manger
+                self.damier[self.A_manger_x][self.A_manger_y]=False #enlever le pion mangé!
+                if self.test_pion_manger(n_x,n_y):
+                    self.mode_repas['activé']=True
+                    self.mode_repas['x']=n_x
+                    self.mode_repas['y']=n_y
+          
+                else:
+                    self.mode_repas['activé']=False
+                    self.tourne=not self.tourne
+            else:   #cas de déplacement
+                self.tourne=not self.tourne
             
-            self.tourne=not self.tourne
 
     def affichage_gui(self):
         #draw checkerboard
