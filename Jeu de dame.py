@@ -1,3 +1,4 @@
+from re import L
 import pygame
 
 class Pion():
@@ -18,7 +19,7 @@ class Game():
             'txt_white':(255, 255, 255),
             'bg_color':(29, 142, 48)
         }
-    window_size=720 #window's size in pixel 实际上是屏幕高, 推荐值720或1080    
+    window_size=300 #window's size in pixel 实际上是屏幕高, 推荐值720或1080
     margin = int(window_size*0.02) #让屏幕尺寸为16:9
 
     def __init__(self) -> None:      
@@ -249,13 +250,18 @@ class Game():
     def main_menu_gui(self, click):
         global user_view
         #on pourra remplacer par une image pour ameliorer le design
-        bg = pygame.Rect(0, 0, 1.75*self.window_size,self.window_size)
-        pygame.draw.rect(self.window, self.colors['bg_color'], bg)
-        play_button = pygame.Rect(0.375*self.window_size, 0.4*self.window_size, self.window_size, 0.2*self.window_size)
-        pygame.draw.rect(self.window, self.colors['black'],play_button)
+        bg_shade_img = pygame.transform.scale(pygame.image.load("menu_bg.png").convert_alpha(), (self.window_size*1.75, self.window_size))
+        play_button = pygame.transform.scale(pygame.image.load("play_button.png").convert_alpha(), (self.window_size, self.window_size*0.2))
+        #bg = pygame.Rect(0, 0, 1.75*self.window_size,self.window_size)
+        #pygame.draw.rect(self.window, self.colors['bg_color'], bg)
+        self.window.blit(bg_shade_img, (0,0))
+
+        play_button_hitbox = pygame.Rect(0.375*self.window_size, 0.4*self.window_size, self.window_size, 0.2*self.window_size)
+        pygame.draw.rect(self.window, self.colors['black'],play_button_hitbox)
+        self.window.blit(play_button, (0.375 * self.window_size, 0.4 * self.window_size))
         play_text = text_font.render("play", True, self.colors['txt_white'])
         self.window.blit(play_text, (0.8*self.window_size, 0.425*self.window_size))
-        if play_button.collidepoint(click):
+        if play_button_hitbox.collidepoint(click):
             user_view = 1
             print("a")
             print(user_view)
@@ -275,7 +281,7 @@ stop = False
 selected=False
 text_font = pygame.font.Font("DancingScript.ttf", int(game.case_size*0.71))
 margin = int(0.02 *game.window_size)
-user_view = 1
+user_view = 0
 while not stop:
 
     pygame.display.flip()
@@ -287,8 +293,10 @@ while not stop:
         #game.affichage()
         if user_view == 1:
             game.affichage_gui()
+            """
             turn_print = text_font.render(game.turn_print, True, (255, 255, 255))
             game.window.blit(turn_print, (game.window_size + margin, margin))
+            """
             message_print = text_font.render(game.message, True, (255, 255, 255))
             game.window.blit(message_print, (game.window_size + margin,margin*5.33))
 
@@ -310,9 +318,12 @@ while not stop:
                     selected=False
             coordonnes_souris = pygame.mouse.get_pos()
             x_mouse, y_mouse = coordonnes_souris[1] // game.case_size,coordonnes_souris[0] // game.case_size
+            image = game.icon['hoover']
+            image.fill((255, 255, 255, 128))
             if x_mouse < 10 and y_mouse < 10:
                 if game.damier[x_mouse][y_mouse]:
                     if game.tourne == game.damier[x_mouse][y_mouse].couleur:
-                        image = game.icon['hoover']
-                        image.fill((255, 255, 255, 128))
+
                         game.pawn_display = game.window.blit(image, (y_mouse*game.case_size, x_mouse*game.case_size))
+            if selected:
+                game.pawn_display = game.window.blit(image,(y*game.case_size, x*game.case_size))
