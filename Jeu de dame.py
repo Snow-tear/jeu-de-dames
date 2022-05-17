@@ -21,7 +21,7 @@ class Game():
             'bg_color':(29, 142, 48)
         }
     
-    window_size=700 #window's size in pixel
+    window_size=500 #window's size in pixel
 
     def __init__(self) -> None:
 
@@ -47,8 +47,8 @@ class Game():
 
         pawn = lambda image: pygame.transform.scale(pygame.image.load(image).convert_alpha(), (self.case_size, self.case_size))
         self.icon=dict(zip(
-            ('white pawn','black pawn', 'white king', 'black king'),
-            map(pawn,("shrek.png","risitas.png", "fiona.png", "stonks.png"))
+            ('white pawn','black pawn', 'white king', 'black king', 'hoover'),
+            map(pawn,("shrek.png","risitas.png", "fiona.png", "stonks.png", "hoover.png"))
         ))
 
     def affichage(self):#affichage console
@@ -190,6 +190,7 @@ class Game():
         juge=self.juger(x,y,n_x,n_y)
         if juge==-1:
             print(self.error_message)
+            self.message = self.error_message
         else:
             self.move(x,y,n_x,n_y)
             if juge==1: #cas de manger
@@ -235,6 +236,19 @@ class Game():
         #message display
         bg = pygame.Rect(self.window_size, 0, 0.75*self.window_size,self.window_size)
         pygame.draw.rect(self.window, self.colors['bg_color'], bg)
+    def main_menu_gui(self, click):
+        global user_view
+        #on pourra remplacer par une image pour ameliorer le design
+        bg = pygame.Rect(0, 0, 1.75*self.window_size,self.window_size)
+        pygame.draw.rect(self.window, self.colors['bg_color'], bg)
+        play_button = pygame.Rect(0.375*self.window_size, 0.4*self.window_size, self.window_size, 0.2*self.window_size)
+        pygame.draw.rect(self.window, self.colors['black'],play_button)
+        play_text = text_font.render("play", True, self.colors['txt_white'])
+        self.window.blit(play_text, (0.8*self.window_size, 0.425*self.window_size))
+        if play_button.collidepoint(click):
+            user_view = 1
+            print("a")
+            print(user_view)
 
 
 game=Game()
@@ -251,36 +265,44 @@ stop = False
 selected=False
 text_font = pygame.font.Font("DancingScript.ttf", int(game.case_size*0.71))
 margin = int(0.02 *game.window_size)
+user_view = 1
 while not stop:
 
     pygame.display.flip()
     for event in pygame.event.get():
+        if user_view == 0:
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                game.main_menu_gui(pygame.mouse.get_pos())
+                print(pygame.mouse.get_pos())
         #game.affichage()
-        game.affichage_gui()
-        turn_print = text_font.render(game.turn, True, (255, 255, 255))
-        game.window.blit(turn_print, (game.window_size + margin, margin))
-        message_print = text_font.render(game.error_message, True, (255, 255, 255))
-        game.window.blit(message_print, (game.window_size + margin,margin*5.33))
+        if user_view == 1:
+            game.affichage_gui()
+            turn_print = text_font.render(game.turn, True, (255, 255, 255))
+            game.window.blit(turn_print, (game.window_size + margin, margin))
+            message_print = text_font.render(game.message, True, (255, 255, 255))
+            game.window.blit(message_print, (game.window_size + margin,margin*5.33))
 
 
-        if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
-            stop = True
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            #print(event.pos)  # coordonnées du clique
-            if not selected:
-                x,y=event.pos[1]//game.case_size,event.pos[0]//game.case_size
-                selected=True
-            else:
-                x_n,y_n=event.pos[1]//game.case_size,event.pos[0]//game.case_size
-                print(x,y,x_n,y_n)
-                game.new_action(x,y,x_n,y_n)
-                game.affichage()
-                selected=False
-        coordonnes_souris = pygame.mouse.get_pos()
-        x_mouse, y_mouse = coordonnes_souris[1] // game.case_size,coordonnes_souris[0] // game.case_size
-        if x_mouse < 10 and y_mouse < 10:
-            if game.damier[x_mouse][y_mouse]:
-                if game.tourne == game.damier[x_mouse][y_mouse].couleur:
-                    image = game.icon['white king']
-                    image.fill((255, 255, 255, 128))
-                    game.pawn_display = game.window.blit(image, (y_mouse*game.case_size, x_mouse*game.case_size))
+            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+                stop = True
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                user_view = 0
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                #print(event.pos)  # coordonnées du clique
+                if not selected:
+                    x,y=event.pos[1]//game.case_size,event.pos[0]//game.case_size
+                    selected=True
+                else:
+                    x_n,y_n=event.pos[1]//game.case_size,event.pos[0]//game.case_size
+                    print(x,y,x_n,y_n)
+                    game.new_action(x,y,x_n,y_n)
+                    game.affichage()
+                    selected=False
+            coordonnes_souris = pygame.mouse.get_pos()
+            x_mouse, y_mouse = coordonnes_souris[1] // game.case_size,coordonnes_souris[0] // game.case_size
+            if x_mouse < 10 and y_mouse < 10:
+                if game.damier[x_mouse][y_mouse]:
+                    if game.tourne == game.damier[x_mouse][y_mouse].couleur:
+                        image = game.icon['hoover']
+                        image.fill((255, 255, 255, 128))
+                        game.pawn_display = game.window.blit(image, (y_mouse*game.case_size, x_mouse*game.case_size))
