@@ -9,7 +9,6 @@ class Pion():
 
 class Game():
     message = ""
-    turn = ""
     mode_repas = {'activé':False} #s'il faut à un pion condinuellement manger
     damier=[[False for j in range(10)]for i in range(10)]   #False: Pas de pion sur la case
     tourne = False  #tourne des joueurs. Noir:True Blanc=False
@@ -20,12 +19,22 @@ class Game():
             'txt_white':(255, 255, 255),
             'bg_color':(29, 142, 48)
         }
-    
-    window_size=500 #window's size in pixel
+    window_size=720 #window's size in pixel 实际上是屏幕高, 推荐值720或1080    
+    margin = int(window_size*0.02) #让屏幕尺寸为16:9
 
-    def __init__(self) -> None:
+    def __init__(self) -> None:      
 
-        
+        #Initialization de GUI
+        pygame.init()
+        self.case_size=self.window_size//10
+        self.window_size=self.case_size*10
+        self.window = pygame.display.set_mode((self.window_size*1.75, self.window_size))
+        self.text_font = pygame.font.SysFont('arial', int(self.case_size*0.71))
+        pawn = lambda image: pygame.transform.scale(pygame.image.load(image).convert_alpha(), (self.case_size, self.case_size))
+        self.icon=dict(zip(
+            ('white pawn','black pawn', 'white king', 'black king'),
+            map(pawn,("shrek.png","risitas.png", "fiona.png", "stonks.png"))
+        ))
 
         #Initialization de damier
         for i in range(4):
@@ -73,7 +82,11 @@ class Game():
                     else:
                         print("白",end='')
             print()
-        self.turn = f"Now is {'Black' if self.tourne else 'White'}'s turn"
+        
+        turn_print=f"Now is {'Black' if self.tourne else 'White'}'s turn"
+        print(turn_print)
+        turn_print = self.text_font.render(turn_print, True, (255, 255, 255))
+        self.window.blit(turn_print, (self.window_size + self.margin, self.margin))
 
     #cette fonction charge le mouvement et la promotion d'un pion/une dame
     def move(self,x:int,y:int,n_x:int,n_y:int):
