@@ -1,4 +1,3 @@
-from re import L
 import pygame
 
 class Pion():
@@ -83,10 +82,8 @@ class Game():
                         print("白",end='')
             print()
         
-        turn_print=f"Now is {'Black' if self.tourne else 'White'}'s turn"
-        print(turn_print)
-        turn_print = self.text_font.render(turn_print, True, (255, 255, 255))
-        self.window.blit(turn_print, (self.window_size + self.margin, self.margin))
+        self.turn_print=f"Now is {'Black' if self.tourne else 'White'}'s turn"
+        print(self.turn_print)
 
     #cette fonction charge le mouvement et la promotion d'un pion/une dame
     def move(self,x:int,y:int,n_x:int,n_y:int):
@@ -290,7 +287,7 @@ while not stop:
         #game.affichage()
         if user_view == 1:
             game.affichage_gui()
-            turn_print = text_font.render(game.turn, True, (255, 255, 255))
+            turn_print = text_font.render(game.turn_print, True, (255, 255, 255))
             game.window.blit(turn_print, (game.window_size + margin, margin))
             message_print = text_font.render(game.message, True, (255, 255, 255))
             game.window.blit(message_print, (game.window_size + margin,margin*5.33))
