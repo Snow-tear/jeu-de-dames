@@ -23,6 +23,7 @@ class Game():
 
     def __init__(self) -> None:      
 
+        test=False
         #Initialization de GUI
         pygame.init()
         self.case_size=self.window_size//10
@@ -36,13 +37,19 @@ class Game():
         ))
 
         #Initialization de damier
-        for i in range(4):
-            for j in range(0+(not i%2),10,2):
-                self.damier[i][j]=Pion(True)
+        if not test:
+            for i in range(4):
+                for j in range(0+(not i%2),10,2):
+                    self.damier[i][j]=Pion(True)
 
-        for i in range(6,10):
-            for j in range(0+(not i%2),10,2):
-                self.damier[i][j]=Pion(False)
+            for i in range(6,10):
+                for j in range(0+(not i%2),10,2):
+                    self.damier[i][j]=Pion(False)
+        else:
+            self.damier[1][2]=Pion(True)
+            self.damier[3][4]=Pion(True)
+            self.damier[5][6]=Pion(True)
+            self.damier[6][7]=Pion(False)
 
         self.message = 'Welcome to jeu de dames!'
         self.affichage()
@@ -205,11 +212,10 @@ class Game():
             self.move(x,y,n_x,n_y)
             if juge==1: #cas de manger
                 self.damier[self.A_manger_x][self.A_manger_y]=False #enlever le pion mangé!
+                self.mode_repas['x']=n_x
+                self.mode_repas['y']=n_y
                 if not self.damier[n_x][n_y].Dame and self.test_pion_manger(n_x,n_y):
-                    self.mode_repas['activé']=True
-                    self.mode_repas['x']=n_x
-                    self.mode_repas['y']=n_y
-          
+                    self.mode_repas['activé']=True          
                 else:
                     self.mode_repas['activé']=False
                     self.tourne=not self.tourne
