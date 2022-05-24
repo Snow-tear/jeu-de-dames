@@ -1,4 +1,3 @@
-from re import L
 import pygame
 
 class Pion():
@@ -8,10 +7,12 @@ class Pion():
 
 
 class Game():
+    test=True
     message = ""
     mode_repas = {'activé':False} #s'il faut à un pion condinuellement manger
     damier=[[False for j in range(10)]for i in range(10)]   #False: Pas de pion sur la case
     tourne = False  #tourne des joueurs. Noir:True Blanc=False
+    gagné=-1    #-1: personne gagne encore Noir:True Blanc=False
     error_message=''
     colors={
             'black':(93, 45, 23),
@@ -19,12 +20,12 @@ class Game():
             'txt_white':(255, 255, 255),
             'bg_color':(29, 142, 48)
         }
-    window_size=300 #window's size in pixel 实际上是屏幕高, 推荐值720或1080
+    window_size=720 #window's size in pixel 实际上是屏幕高, 推荐值720或1080
     margin = int(window_size*0.02) #让屏幕尺寸为16:9
 
     def __init__(self) -> None:      
 
-        test=False
+        
         #Initialization de GUI
         pygame.init()
         self.case_size=self.window_size//10
@@ -38,7 +39,7 @@ class Game():
         ))
 
         #Initialization de damier
-        if not test:
+        if not self.test:
             for i in range(4):
                 for j in range(0+(not i%2),10,2):
                     self.damier[i][j]=Pion(True)
@@ -201,6 +202,16 @@ class Game():
                         return True
         return False
 
+    #return les pos où un pion/dame peut aller
+    def aller_possible(self,x,y):
+        pos=[]
+        for i in range(10):
+            for j in range(10):
+                if self.juger(x,y,i,j) != -1:
+                    pos.append((i,j))
+        return pos
+
+
     def new_action(self,x,y,n_x,n_y):
         self.A_manger_x=False
         self.A_manger_y=False
@@ -222,6 +233,17 @@ class Game():
                     self.tourne=not self.tourne
             else:   #cas de déplacement
                 self.tourne=not self.tourne
+
+            #detect gagner
+            self.gagné = not self.tourne
+            for x in range(10):
+                for y in range(10):
+                    if self.damier[x][y] and self.damier[x][y].couleur == self.tourne:
+                        if self.aller_possible(x,y):
+                            self.gagné = -1
+            
+
+            
             
 
             
@@ -322,6 +344,10 @@ while not stop:
                     game.new_action(x,y,x_n,y_n)
                     game.affichage()
                     selected=False
+                    if game.gagné != -1:
+                        print('Black' if game.gagné else 'White'+' a gagné')
+                
+
             coordonnes_souris = pygame.mouse.get_pos()
             x_mouse, y_mouse = coordonnes_souris[1] // game.case_size,coordonnes_souris[0] // game.case_size
             image = game.icon['hoover']
