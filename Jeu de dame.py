@@ -1,4 +1,5 @@
 import pygame
+import time
 
 class Pion():
     Dame=False
@@ -7,7 +8,7 @@ class Pion():
 
 
 class Game():
-    test=True
+    test=False
     message = ""
     mode_repas = {'activé':False} #s'il faut à un pion condinuellement manger
     damier=[[False for j in range(10)]for i in range(10)]   #False: Pas de pion sur la case
@@ -15,12 +16,12 @@ class Game():
     gagné=-1    #-1: personne gagne encore Noir:True Blanc=False
     error_message=''
     colors={
-            'black':(93, 45, 23),
-            'white':(229, 177, 119),
-            'txt_white':(255, 255, 255),
-            'bg_color':(29, 142, 48)
+            'black':(212, 224, 217),
+            'white':(241, 255, 247),
+            'txt_color':(0, 0, 0),
+            'bg_color':(241, 255, 247)
         }
-    window_size=720 #window's size in pixel 实际上是屏幕高, 推荐值720或1080
+    window_size=400 #window's size in pixel 实际上是屏幕高, 推荐值720或1080
     margin = int(window_size*0.02) #让屏幕尺寸为16:9
 
     def __init__(self) -> None:      
@@ -35,7 +36,7 @@ class Game():
         pawn = lambda image: pygame.transform.scale(pygame.image.load(image).convert_alpha(), (self.case_size, self.case_size))
         self.icon=dict(zip(
             ('white pawn','black pawn', 'white king', 'black king'),
-            map(pawn,("shrek.png","risitas.png", "fiona.png", "stonks.png"))
+            map(pawn,("white_pawn.png","black_pawn.png", "white_king.png", "black_king.png"))
         ))
 
         #Initialization de damier
@@ -65,7 +66,7 @@ class Game():
         pawn = lambda image: pygame.transform.scale(pygame.image.load(image).convert_alpha(), (self.case_size, self.case_size))
         self.icon=dict(zip(
             ('white pawn','black pawn', 'white king', 'black king', 'hoover'),
-            map(pawn,("shrek.png","risitas.png", "fiona.png", "stonks.png", "hoover.png"))
+            map(pawn,("white_pawn.png","black_pawn.png", "white_king.png", "black_king.png", "hoover.png"))
         ))
 
     def affichage(self):#affichage console
@@ -114,14 +115,14 @@ class Game():
         
         #les cassgénérals, quelque soit pion ou dame
         if not (0<=n_x<10 and 0<=n_y<10 and 0<=x<10 and 0<=y<10):
-            self.error_message="En dehors de la damier!"
+            self.error_message="En dehors du damier!"
             return -1
         pion=self.damier[x][y]
         if not pion:
             self.error_message='Pas de pion ici'
             return -1
         if pion.couleur !=self.tourne:
-            self.error_message="C'est pas votre pion!"
+            self.error_message="Ce n'est pas votre pion!"
             return -1
         
         if self.damier[n_x][n_y]:# test si la case d'arrivé est occupée
@@ -144,19 +145,19 @@ class Game():
                     self.error_message='continuer à manger!'
                 #le pion doit obligatoiremant manger si c'est possible
                 elif self.mes_pions_peuvent_manger():
-                    self.error_message='Il faut à un pion manger!!!!!'
+                    self.error_message='Il faut manger un pion!!!!!'
                     return -1
                 else:
                     return 0    #déplacer
             if abs(n_y-y)==2:   #test si il est possible d'y aller en mangeant
                 if self.mode_repas['activé']:
                     if self.mode_repas['x']!=x or self.mode_repas['y']!=y:
-                        self.error_message='il faut à un MÊME pion continuer à manger!'
+                        self.error_message='Le MÊME pion doit continuer à manger!'
                         return -1
             #/!\ prise obligatoire, verifier si il y a une prise possible avant de regarder si on peut avancer
                 pion_manger=self.damier[x+diff_x//2][y+diff_y//2]
                 if not pion_manger or pion_manger.couleur == self.tourne:
-                    self.error_message="on peut pas manger!"
+                    self.error_message="on ne peut pas manger!"
                     return -1
                 self.A_manger_x=x+diff_x//2
                 self.A_manger_y=y+diff_y//2
@@ -168,7 +169,7 @@ class Game():
         
         else: #on traite le cas des dames
             if self.mes_pions_peuvent_manger():
-                self.error_message='Il faut à un pion manger!!!!!'
+                self.error_message='Il faut manger un pion!!!!!'
                 return -1
             if abs(diff_x)==1:return 0
             #test si toutes les cases sur la diagonales sont libre (oui -> avancer, oui sauf l'avant dernière -> manger, non -> pas possible)
@@ -278,20 +279,26 @@ class Game():
     def main_menu_gui(self, click):
         global user_view
         #on pourra remplacer par une image pour ameliorer le design
-        bg_shade_img = pygame.transform.scale(pygame.image.load("menu_bg.png").convert_alpha(), (self.window_size*1.75, self.window_size))
+        #bg_shade_img = pygame.transform.scale(pygame.image.load("menu_bg.png").convert_alpha(), (self.window_size*1.75, self.window_size))
+        bg_rect = pygame.Rect(0,0,1.75*self.window_size, self.window_size)
+        pygame.draw.rect(self.window, self.colors['bg_color'],bg_rect)
         play_button = pygame.transform.scale(pygame.image.load("play_button.png").convert_alpha(), (self.window_size, self.window_size*0.2))
         #bg = pygame.Rect(0, 0, 1.75*self.window_size,self.window_size)
         #pygame.draw.rect(self.window, self.colors['bg_color'], bg)
-        self.window.blit(bg_shade_img, (0,0))
+        #self.window.blit(bg_shade_img, (0,0))
 
-        play_button_hitbox = pygame.Rect(0.375*self.window_size, 0.4*self.window_size, self.window_size, 0.2*self.window_size)
-        pygame.draw.rect(self.window, self.colors['black'],play_button_hitbox)
-        self.window.blit(play_button, (0.375 * self.window_size, 0.4 * self.window_size))
-        play_text = text_font.render("play", True, self.colors['txt_white'])
-        self.window.blit(play_text, (0.8*self.window_size, 0.425*self.window_size))
+        play_button_hitbox = pygame.Rect(0.375*self.window_size, 0.5*self.window_size, self.window_size, 0.2*self.window_size)
+        pygame.draw.rect(self.window, self.colors['bg_color'],play_button_hitbox)
+        self.window.blit(play_button, (0.375 * self.window_size, 0.5 * self.window_size))
+        play_text = title_font.render("Play", True, self.colors['txt_color'])
+        self.window.blit(play_text, (0.725*self.window_size, 0.5*self.window_size))
+        game_name_l1 = title_font.render("JEU DE", True, self.colors['txt_color'])
+        game_name_l2 = title_font.render("DAMES", True, self.colors['txt_color'])
+        self.window.blit(game_name_l1, (1.25*self.window_size, 0.05*self.window_size))
+        self.window.blit(game_name_l2, (1.325*self.window_size, 0.2*self.window_size))
+
         if play_button_hitbox.collidepoint(click):
             user_view = 1
-            print("a")
             print(user_view)
 
 
@@ -307,32 +314,43 @@ while True:
 
 stop = False
 selected=False
-text_font = pygame.font.Font("DancingScript.ttf", int(game.case_size*0.71))
-margin = int(0.02 *game.window_size)
+text_font = pygame.font.Font("CutiveMono-Regular.ttf", int(game.case_size*0.48))
+title_font = pygame.font.Font("CutiveMono-Regular.ttf", int(game.case_size*1.25))
+margin = int(0.05 *game.window_size)
 user_view = 0
+
+
+credit_bg = pygame.transform.scale(pygame.image.load("game_credits.png").convert_alpha(), (game.window_size*1.75, game.window_size))
+game.window.blit(credit_bg, (0,0))
+pygame.display.flip()
+time.sleep(2)
+game.main_menu_gui((0,0))
+
 while not stop:
 
     pygame.display.flip()
+    print("user view", user_view)
     for event in pygame.event.get():
+        if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE and user_view == 0):
+            stop = True
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE and user_view == 1:
+            user_view = 0
+            game.main_menu_gui((0, 0))
         if user_view == 0:
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 game.main_menu_gui(pygame.mouse.get_pos())
-                print(pygame.mouse.get_pos())
         #game.affichage()
-        if user_view == 1:
+        elif user_view == 1:
             game.affichage_gui()
             """
             turn_print = text_font.render(game.turn_print, True, (255, 255, 255))
             game.window.blit(turn_print, (game.window_size + margin, margin))
             """
-            message_print = text_font.render(game.message, True, (255, 255, 255))
-            game.window.blit(message_print, (game.window_size + margin,margin*5.33))
+            message_print = text_font.render(game.message, True, (0, 0, 0))
+            game.window.blit(message_print, (game.window_size + margin,margin))
 
 
-            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
-                stop = True
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                user_view = 0
+
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 #print(event.pos)  # coordonnées du clique
                 if not selected:
