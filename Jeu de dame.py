@@ -8,7 +8,7 @@ class Pion():
 
 
 class Game():
-    test=False
+    test=True
     message = ""
     mode_repas = {'activé':False} #s'il faut à un pion condinuellement manger
     damier=[[False for j in range(10)]for i in range(10)]   #False: Pas de pion sur la case
@@ -329,7 +329,6 @@ game.main_menu_gui((0,0))
 while not stop:
 
     pygame.display.flip()
-    print("user view", user_view)
     for event in pygame.event.get():
         if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE and user_view == 0):
             stop = True
@@ -348,32 +347,35 @@ while not stop:
             """
             message_print = text_font.render(game.message, True, (0, 0, 0))
             game.window.blit(message_print, (game.window_size + margin,margin))
+            if game.gagné != -1:
+                victory_announcement = text_font.render('Les noirs' if game.gagné else 'Les blancs' + ' ont gagnés !', True, game.colors["txt_color"])
+                game.window.blit(victory_announcement, (game.window_size + margin, 0.125*game.window_size))
+                instruction_message = text_font.render("Appuyez sur [esc]",True, game.colors["txt_color"])
+                game.window.blit(instruction_message, (game.window_size + margin, 0.9*game.window_size))
+
+            else:
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    #print(event.pos)  # coordonnées du clique
+                    if not selected:
+                        x,y=event.pos[1]//game.case_size,event.pos[0]//game.case_size
+                        selected=True
+                    else:
+                        x_n,y_n=event.pos[1]//game.case_size,event.pos[0]//game.case_size
+                        print(x,y,x_n,y_n)
+                        game.new_action(x,y,x_n,y_n)
+                        game.affichage()
+                        selected=False
 
 
 
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                #print(event.pos)  # coordonnées du clique
-                if not selected:
-                    x,y=event.pos[1]//game.case_size,event.pos[0]//game.case_size
-                    selected=True
-                else:
-                    x_n,y_n=event.pos[1]//game.case_size,event.pos[0]//game.case_size
-                    print(x,y,x_n,y_n)
-                    game.new_action(x,y,x_n,y_n)
-                    game.affichage()
-                    selected=False
-                    if game.gagné != -1:
-                        print('Black' if game.gagné else 'White'+' a gagné')
-                
+                coordonnes_souris = pygame.mouse.get_pos()
+                x_mouse, y_mouse = coordonnes_souris[1] // game.case_size,coordonnes_souris[0] // game.case_size
+                image = game.icon['hoover']
+                image.fill((255, 255, 255, 128))
+                if x_mouse < 10 and y_mouse < 10:
+                    if game.damier[x_mouse][y_mouse]:
+                        if game.tourne == game.damier[x_mouse][y_mouse].couleur:
 
-            coordonnes_souris = pygame.mouse.get_pos()
-            x_mouse, y_mouse = coordonnes_souris[1] // game.case_size,coordonnes_souris[0] // game.case_size
-            image = game.icon['hoover']
-            image.fill((255, 255, 255, 128))
-            if x_mouse < 10 and y_mouse < 10:
-                if game.damier[x_mouse][y_mouse]:
-                    if game.tourne == game.damier[x_mouse][y_mouse].couleur:
-
-                        game.pawn_display = game.window.blit(image, (y_mouse*game.case_size, x_mouse*game.case_size))
-            if selected:
-                game.pawn_display = game.window.blit(image,(y*game.case_size, x*game.case_size))
+                            game.pawn_display = game.window.blit(image, (y_mouse*game.case_size, x_mouse*game.case_size))
+                if selected:
+                    game.pawn_display = game.window.blit(image,(y*game.case_size, x*game.case_size))
