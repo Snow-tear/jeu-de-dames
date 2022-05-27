@@ -1,7 +1,7 @@
 # Rapport du projet
 
 Lien du développement du projet : [Jeu de dames · GitLab INSA Lyon](https://gitlab.insa-lyon.fr/kloumida/jeu-de-dames)
-<br/>Lien du design : [Jeu de dames - Figma](https://www.figma.com/file/m8VwZRUorLVr325wRjFDpI/Jeu-de-dame?node-id=0%3A1)
+Lien du design : [Jeu de dames - Figma](https://www.figma.com/file/m8VwZRUorLVr325wRjFDpI/Jeu-de-dame?node-id=0%3A1)
 
 ## Installation
 
@@ -51,16 +51,18 @@ La fonction `Game.juger` est un peu compliquée. Elle traite d'abord les cas gé
 
 `Game.new_action(self,x,y,n_x,n_y)` : Elle réalise une nouvelle action. Elle réagit selon de différents cas. Affichage un message en cas l'action impossible, prendre un pion en cas de capturer...... Elle est chargée aussi le control du '**mode repas**'. C'est réalisation du règle: Si la capture place le pion dans une situation de capture, la capture continue.
 
-* `Game.__init__(self)` : chaque fois un objet de Game créé, 
-* `affichage_gui(self)` : pemet d'afficher la partie : des boucles créent le damier et y placent les pions
-* `main_menu_gui(self, click)` : affiche le menu principal en affichant les différents boutons et élément de design. Pour les clics, on utilise des collisions avec les différents boutons, ce qui permet d'accéder au reste du programme.
-* `setting_gui(self, click, event)` : affiche les paramètre du jeu : activer ou desactiver le son, la musique ou l'écran de presentation (ce dernier paramètre necessite un redemarage de l'application). Les changements sont incrits dans un fichier externe (Settings.txt) afin d'être conservé au redemarrage.
-* `lang_gui(self, click, event)` : permet de changer la langue du programme. Pour cela, on stock toute le texte affiché dans 2 fichier de langue que l'on importe sous forme de liste. Le paramètre change un autre fichier, lang.txt, qui stock la langue à importer au démarrage.
+`affichage_gui(self)` : permet d'afficher la partie : des boucles créent le damier et y placent les pions
+
+`main_menu_gui(self, click)` : affiche le menu principal en affichant les différents boutons et élément de design. Pour les clics, on utilise des collisions avec les différents boutons, ce qui permet d'accéder au reste du programme.
+
+`setting_gui(self, click, event)` : affiche les paramètre du jeu : activer ou désactiver le son, la musique ou l'écran de présentation (ce dernier paramètre nécessite un redémarrage de l'application). Les changements sont inscrits dans un fichier externe (Settings.txt) afin d'être conservé au redémarrage.
+
+`lang_gui(self, click, event)` : permet de changer la langue du programme. Pour cela, on stock toute le texte affiché dans 2 fichier de langue que l'on importe sous forme de liste. Le paramètre change un autre fichier, lang.txt, qui stock la langue à importer au démarrage.
 
 Fonctionnement de la boucle principale:
 
 On a d'abord la fonction `pygame.display.flip()` qui permet de raffraichir l'affichage.
-Ensuite, la boucle `for event in pygame.event.get():` est parcouru chaque fois qu'un évenement est détécté par pygame, et cette évenement sera nommé `event`.
-Cela permet ainsi de définir la fermeture du jeu quand on ferme la fenetre, ainsi que le role de la touche echap (retour au menu principal ou quitter).
+Ensuite, la boucle `for event in pygame.event.get():` est parcouru chaque fois qu'un évènement est détecté par pygame, et cette évènement sera nommé `event`.
+Cela permet ainsi de définir la fermeture du jeu quand on ferme la fenêtre, ainsi que le rôle de la touche echap (retour au menu principal ou quitter).
 La boucle est ensuite découpé en différentes `user_view`, correspondant à la partie du programme dans laquelle nous nous trouvons.
-Chacune d'entre elle renvoie aux fonctions d'affichage associés. Dans la `user_view` 1, correspondant à la phase de jeu, on doit également afficher les messages. On utilise un algorithme qui permet un retour à la ligne si un message est trop long. Si il n'y a pas victoire, on détecte les clics et la position de la souris pour permettre la selection/déselection des pions, et on met un effet blanc quand la souris passe au dessus d'un pion que l'on a la droit de jouer, ainsi que sur le pion selectionné.
+Chacune d'entre elle renvoie aux fonctions d'affichage associés. Dans la `user_view` 1, correspondant à la phase de jeu, on doit également afficher les messages. On utilise un algorithme qui permet un retour à la ligne si un message est trop long. Si il n'y a pas victoire, on détecte les clics et la position de la souris pour permettre la sélection/désélection des pions, et on met un effet blanc quand la souris passe au dessus d'un pion que l'on a la droit de jouer, ainsi que sur le pion sélectionné.
