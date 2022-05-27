@@ -8,7 +8,7 @@ class Pion():
 
 
 class Game():
-    test=True
+    test=False
     message = ""
     mode_repas = {'activé':False} #s'il faut à un pion condinuellement manger
     damier=[[False for j in range(10)]for i in range(10)]   #False: Pas de pion sur la case
@@ -23,6 +23,17 @@ class Game():
         }
     window_size=400 #window's size in pixel 实际上是屏幕高, 推荐值720或1080
     margin = int(window_size*0.02) #让屏幕尺寸为16:9
+
+    pygame.mixer.init()
+    click_sound = pygame.mixer.Sound("clic.ogg")
+    pawn_sound = pygame.mixer.Sound("pion.wav")
+    file = open('Settings.txt', 'r')
+    sound_data = str(file.read()).split("/")
+    file.close()
+    play_sound = True if sound_data[0] == "True" else False
+    play_music = True if sound_data[1] == "True" else False
+    credit = True if sound_data[2] == "True" else False
+
 
     def __init__(self) -> None:      
 
@@ -234,6 +245,7 @@ class Game():
                     self.tourne=not self.tourne
             else:   #cas de déplacement
                 self.tourne=not self.tourne
+            if self.play_sound: self.pawn_sound.play()
 
             #detect gagner
             self.gagné = not self.tourne
@@ -297,9 +309,58 @@ class Game():
         self.window.blit(game_name_l1, (1.25*self.window_size, 0.05*self.window_size))
         self.window.blit(game_name_l2, (1.325*self.window_size, 0.2*self.window_size))
 
+        #settings buttons
+        setting_button = pygame.transform.scale(pygame.image.load("settings_ico.png").convert_alpha(), (0.12*self.window_size, 0.12*self.window_size))
+        setting_button_surface = self.window.blit(setting_button, (0.05*self.window_size, 0.05*self.window_size) )
+        lang_button = pygame.transform.scale(pygame.image.load("lang_ico.png").convert_alpha(),(0.12 * self.window_size, 0.12 * self.window_size))
+        lang_button_surface = self.window.blit(lang_button, (0.22 * self.window_size, 0.05 * self.window_size))
+        leaderboard_button = pygame.transform.scale(pygame.image.load("leaderboard_ico.png").convert_alpha(),(0.12 * self.window_size, 0.12 * self.window_size))
+        leaderboard_button_surface = self.window.blit(leaderboard_button, (0.39 * self.window_size, 0.05 * self.window_size))
+
         if play_button_hitbox.collidepoint(click):
             user_view = 1
-            print(user_view)
+            if self.play_sound:self.click_sound.play()
+        elif setting_button_surface.collidepoint(click):
+            user_view = 2
+            if self.play_sound:self.click_sound.play()
+        elif lang_button_surface.collidepoint(click):
+            user_view = 3
+            if self.play_sound:self.click_sound.play()
+        elif leaderboard_button_surface.collidepoint(click):
+            user_view = 4
+            if self.play_sound:self.click_sound.play()
+    def setting_gui(self, click, event):
+        bg_rect = pygame.Rect(0, 0, 1.75 * self.window_size, self.window_size)
+        pygame.draw.rect(self.window, self.colors['bg_color'], bg_rect)
+        self.window.blit(title_font.render("Son", True, self.colors['txt_color']),(0.2*self.window_size,0.2*self.window_size ) )
+        self.window.blit(title_font.render("Musique", True, self.colors['txt_color']),(0.2 * self.window_size, 0.4 * self.window_size))
+        self.window.blit(title_font.render("Générique", True, self.colors['txt_color']),(0.2 * self.window_size, 0.6 * self.window_size))
+
+
+        on_img= pygame.transform.scale(pygame.image.load("switch_on.png").convert_alpha(),(0.12 * self.window_size, 0.12 * self.window_size))
+        off_img =pygame.transform.scale(pygame.image.load("switch_off.png").convert_alpha(),(0.12 * self.window_size, 0.12 * self.window_size))
+
+        sound_switch = self.window.blit(on_img if self.play_sound == True else off_img, (self.window_size, 0.2*self.window_size))
+        if  sound_switch.collidepoint(click) and event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            self.play_sound = False if self.play_sound == True else True
+            if self.play_sound: self.click_sound.play()
+            file = open('Settings.txt', 'w')
+            file.write("{}/{}/{}".format(self.play_music, self.play_sound, self.credit))
+            file.close()
+        music_switch = self.window.blit(on_img if self.play_music == True else off_img, (self.window_size, 0.4*self.window_size))
+        if music_switch.collidepoint(click) and event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            self.play_music = (False if self.play_music == True else True)
+            if self.play_sound: self.click_sound.play()
+            file = open('Settings.txt', 'w')
+            file.write("{}/{}/{}".format(self.play_music, self.play_sound, self.credit))
+            file.close()
+        credit_switch = self.window.blit(on_img if self.credit == True else off_img, (self.window_size, 0.6*self.window_size))
+        if credit_switch.collidepoint(click) and event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            self.credit = (False if self.credit == True else True)
+            if self.play_sound: self.click_sound.play()
+            file = open('Settings.txt', 'w')
+            file.write("{}/{}/{}".format(self.play_music, self.play_sound, self.credit))
+            file.close()
 
 
 game=Game()
@@ -317,13 +378,13 @@ selected=False
 text_font = pygame.font.Font("CutiveMono-Regular.ttf", int(game.case_size*0.48))
 title_font = pygame.font.Font("CutiveMono-Regular.ttf", int(game.case_size*1.25))
 margin = int(0.05 *game.window_size)
-user_view = 0
+user_view = 0 #main menue : 0, game : 1, settings : 2, language setting : 3, leaderboard : 4
 
-
-credit_bg = pygame.transform.scale(pygame.image.load("game_credits.png").convert_alpha(), (game.window_size*1.75, game.window_size))
-game.window.blit(credit_bg, (0,0))
-pygame.display.flip()
-time.sleep(2)
+if game.credit:
+    credit_bg = pygame.transform.scale(pygame.image.load("game_credits.png").convert_alpha(), (game.window_size*1.75, game.window_size))
+    game.window.blit(credit_bg, (0,0))
+    pygame.display.flip()
+    time.sleep(2)
 game.main_menu_gui((0,0))
 
 while not stop:
@@ -332,7 +393,7 @@ while not stop:
     for event in pygame.event.get():
         if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE and user_view == 0):
             stop = True
-        elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE and user_view == 1:
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE :
             user_view = 0
             game.main_menu_gui((0, 0))
         if user_view == 0:
@@ -379,3 +440,9 @@ while not stop:
                             game.pawn_display = game.window.blit(image, (y_mouse*game.case_size, x_mouse*game.case_size))
                 if selected:
                     game.pawn_display = game.window.blit(image,(y*game.case_size, x*game.case_size))
+        elif user_view == 2: #settings
+            game.setting_gui(pygame.mouse.get_pos(), event)
+        elif user_view == 3: #language
+            pass
+        elif user_view == 4: #leaderboard
+            pass
