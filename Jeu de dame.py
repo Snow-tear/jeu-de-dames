@@ -13,7 +13,7 @@ class Game():
     mode_repas = {'activé':False} #s'il faut à un pion condinuellement manger
     damier=[[False for j in range(10)]for i in range(10)]   #False: Pas de pion sur la case
     tourne = False  #tourne des joueurs. Noir:True Blanc=False
-    gagné=-1    #-1: personne gagne encore Noir:True Blanc=False
+    gagné=-1    #-1: personne ne gagne encore Noir:True Blanc=False
     error_message=''
     colors={
             'black':(212, 224, 217),
@@ -24,39 +24,9 @@ class Game():
     window_size=720 #window's size in pixel 实际上是屏幕高, 推荐值720或1080
     margin = int(window_size*0.02) #让屏幕尺寸为16:9
 
-    #sound initialization
-    pygame.mixer.init()
-    music = pygame.mixer.music.load("src/music.ogg")
-    click_sound = pygame.mixer.Sound("src/clic.ogg")
-    pawn_sound = pygame.mixer.Sound("src/pion.wav")
-    file = open('Settings.txt', 'r')
-    sound_data = str(file.read()).split("/")
-    file.close()
-    play_sound = True if sound_data[1] == "True" else False
-    play_music = True if sound_data[0] == "True" else False
-    credit = True if sound_data[2] == "True" else False
-
-    #text importation
-    file = open('lang.txt', 'r')
-    lang = str(file.read())
-    print(lang)
-    if lang == 'fr':
-        file = open('French.txt', 'r', encoding='utf-8')
-        text_str = str(file.read()).split("/")  # contient tous le texte qui sera utilisé par la suite
-    elif lang == 'en':
-        file = open('English.txt', 'r', encoding='utf-8')
-        text_str = str(file.read()).split("/")
-    #victories
-    file = open('win.txt', 'r')
-    victories_str = str(file.read()).split('/')
-
-
-    lang_buff = lang
-
-
+    
     def __init__(self) -> None:      
-
-        
+     
         #Initialization de GUI
         pygame.init()
         self.case_size=self.window_size//10
@@ -68,6 +38,17 @@ class Game():
             ('white pawn','black pawn', 'white king', 'black king'),
             map(pawn,("src/white_pawn.png","src/black_pawn.png", "src/white_king.png", "src/black_king.png"))
         ))
+
+        #text importation
+        file = open('lang.txt', 'r')
+        lang = str(file.read())
+        print(lang)
+        if lang == 'fr':
+            file = open('French.txt', 'r', encoding='utf-8')
+            self.text_str = str(file.read()).split("/")  # contient tous le texte qui sera utilisé par la suite
+        elif lang == 'en':
+            file = open('English.txt', 'r', encoding='utf-8')
+            self.text_str = str(file.read()).split("/")
 
         #Initialization de damier
         if not self.test:
@@ -98,6 +79,25 @@ class Game():
             ('white pawn','black pawn', 'white king', 'black king', 'hoover'),
             map(pawn,("src/white_pawn.png","src/black_pawn.png", "src/white_king.png", "src/black_king.png", "src/hoover.png"))
         ))
+
+        #sound initialization
+        pygame.mixer.init()
+        self.music = pygame.mixer.music.load("src/music.ogg")
+        self.click_sound = pygame.mixer.Sound("src/clic.ogg")
+        self.pawn_sound = pygame.mixer.Sound("src/pion.wav")
+        file = open('Settings.txt', 'r')
+        sound_data = str(file.read()).split("/")
+        file.close()
+        self.play_sound =  sound_data[1] == "True" 
+        self.play_music =  sound_data[0] == "True" 
+        self.credit =  sound_data[2] == "True" 
+
+        
+        #victories
+        file = open('win.txt', 'r')
+        self.victories_str = str(file.read()).split('/')
+
+        self.lang_buff = lang
 
     def affichage(self):#affichage console
 
@@ -273,12 +273,7 @@ class Game():
                     if self.damier[x][y] and self.damier[x][y].couleur == self.tourne:
                         if self.aller_possible(x,y):
                             self.gagné = -1
-            
-
-            
-            
-
-            
+                      
 
     def affichage_gui(self):
         #draw checkerboard
@@ -307,6 +302,7 @@ class Game():
         #message display
         bg = pygame.Rect(self.window_size, 0, 0.75*self.window_size,self.window_size)
         pygame.draw.rect(self.window, self.colors['bg_color'], bg)
+ 
     def main_menu_gui(self, click, event):
         global user_view
 
@@ -350,6 +346,7 @@ class Game():
         elif leaderboard_button_surface.collidepoint(click) and event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             user_view = 4
             if self.play_sound:self.click_sound.play()
+    
     def setting_gui(self, click, event):
         bg_rect = pygame.Rect(0, 0, 1.75 * self.window_size, self.window_size)
         pygame.draw.rect(self.window, self.colors['bg_color'], bg_rect)
@@ -386,6 +383,7 @@ class Game():
             file = open('Settings.txt', 'w')
             file.write("{}/{}/{}".format(self.play_music, self.play_sound, self.credit))
             file.close()
+ 
     def lang_gui(self, click, event):
         bg_rect = pygame.Rect(0, 0, 1.75 * self.window_size, self.window_size)
         pygame.draw.rect(self.window, self.colors['bg_color'], bg_rect)
@@ -426,9 +424,8 @@ class Game():
 
 game=Game()
 
-
 stop = False
-selected=False
+selected=False # un pion est sélectionné
 text_font = pygame.font.Font("src/CutiveMono-Regular.ttf", int(game.case_size*0.48))
 title_font = pygame.font.Font("src/CutiveMono-Regular.ttf", int(game.case_size*1.25))
 margin = int(0.05 *game.window_size)
@@ -440,15 +437,15 @@ if game.credit:
     game.window.blit(credit_bg, (0,0))
     pygame.display.flip()
     time.sleep(2)
+
 game.main_menu_gui((0,0), None)
 pygame.mixer.music.play(-1)
 if not game.play_music:
     pygame.mixer.music.pause()
+
 while not stop:
 
-
     pygame.display.flip()
-
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE and user_view == 0):
