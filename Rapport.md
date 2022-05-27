@@ -16,10 +16,16 @@ Et pour jouer, il suffit d'exécuter :
 python "Jeu de dame.py"
 ```
 
-## Structure du code
+## Structure globale du code
 
 Le programme a trois partie: 
 
 * La définition de la classe **Pion**, où on définit les propriétés d'un pion: son couleur et s'il est une dame ou pas.
-* La définition de la classe **Game**. C'est le noyau du programme, elle contient toutes les variables importants et les fonctions qui interprètent le règle du jeu.
-* **Une boucle while**. C'est le code 'principale' qui entraine le programme et fait les appels des fonction dans
+* La définition de la classe **Game**. C'est le noyau du programme, elle contient toutes les variables importantes et les fonctions qui interprètent le règle du jeu.
+* **Une boucle while**. C'est le code 'principale' qui entraine le programme et fait les appels aux fonction dans la classe Game et aux fonction de la graphique.
+
+## Fonctions et Variables
+
+La majorité de fonctions sont dans la classe Game.
+
+`Game.__init__(self)` : chaque fois un objet de Game créé, 
