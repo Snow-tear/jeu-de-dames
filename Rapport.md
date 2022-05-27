@@ -3,6 +3,12 @@
 Lien du développement du projet : [Jeu de dames · GitLab INSA Lyon](https://gitlab.insa-lyon.fr/kloumida/jeu-de-dames)
 Lien du design : [Jeu de dames - Figma](https://www.figma.com/file/m8VwZRUorLVr325wRjFDpI/Jeu-de-dame?node-id=0%3A1)
 
+## Contributeurs
+
+Clément CHAPARD : La graphique, le design et la langue.
+
+SUN Jixiang : Réalisation des règle, Connexion entre le noyau et la graphique.
+
 ## Installation
 
 Ce programme ne comporte qu'un fichier du code, mais l'interface graphique dépend de la libraire `pygame`. Pour l'installer :
@@ -59,7 +65,7 @@ La fonction `Game.juger` est un peu compliquée. Elle traite d'abord les cas gé
 
 `lang_gui(self, click, event)` : permet de changer la langue du programme. Pour cela, on stock toute le texte affiché dans 2 fichier de langue que l'on importe sous forme de liste. Le paramètre change un autre fichier, lang.txt, qui stock la langue à importer au démarrage.
 
-Fonctionnement de la boucle principale:
+## La boucle principale
 
 On a d'abord la fonction `pygame.display.flip()` qui permet de raffraichir l'affichage.
 Ensuite, la boucle `for event in pygame.event.get():` est parcouru chaque fois qu'un évènement est détecté par pygame, et cette évènement sera nommé `event`.
