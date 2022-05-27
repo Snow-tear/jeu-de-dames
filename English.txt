@@ -1,0 +1,1 @@
+Welcome to jeu de dames!/Outside of the checkerboard!/No pawn there/Not your pawn/already a pawn or a king there/Diagonal please/a pawn can't go backward/continue to eat/You have to eat a pawn/The SAME pawn must continue to eat/We can't eat/A pawn can't go that far/You eat to much!/Play/Sound/Music/Credits/Restart to apply changes 

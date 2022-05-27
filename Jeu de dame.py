@@ -24,6 +24,7 @@ class Game():
     window_size=400 #window's size in pixel 实际上是屏幕高, 推荐值720或1080
     margin = int(window_size*0.02) #让屏幕尺寸为16:9
 
+    #sound initialization
     pygame.mixer.init()
     click_sound = pygame.mixer.Sound("clic.ogg")
     pawn_sound = pygame.mixer.Sound("pion.wav")
@@ -33,6 +34,21 @@ class Game():
     play_sound = True if sound_data[0] == "True" else False
     play_music = True if sound_data[1] == "True" else False
     credit = True if sound_data[2] == "True" else False
+
+    #text importation
+    file = open('lang.txt', 'r')
+    lang = str(file.read())
+    print(lang)
+    if lang == 'fr':
+        file = open('French.txt', 'r', encoding='utf-8')
+        text_str = str(file.read()).split("/")  # contient tous le texte qui sera utilisé par la suite
+    elif lang == 'en':
+        file = open('English.txt', 'r', encoding='utf-8')
+        text_str = str(file.read()).split("/")
+    else:
+        print("on ne passe dans aucune condition")
+
+    lang_buff = lang
 
 
     def __init__(self) -> None:      
@@ -65,7 +81,7 @@ class Game():
             self.damier[5][6]=Pion(True)
             self.damier[6][7]=Pion(False)
 
-        self.message = 'Welcome to jeu de dames!'
+        self.message = self.text_str[0] #Bienvenue sur le jeu de dames !
         self.affichage()
 
         #Initialization de GUI
@@ -126,61 +142,61 @@ class Game():
         
         #les cassgénérals, quelque soit pion ou dame
         if not (0<=n_x<10 and 0<=n_y<10 and 0<=x<10 and 0<=y<10):
-            self.error_message="En dehors du damier!"
+            self.error_message=self.text_str[1] #En dehors du damier!
             return -1
         pion=self.damier[x][y]
         if not pion:
-            self.error_message='Pas de pion ici'
+            self.error_message= self.text_str[2] #Pas de pion ici
             return -1
         if pion.couleur !=self.tourne:
-            self.error_message="Ce n'est pas votre pion!"
+            self.error_message= self.text_str[3] #Ce n'est pas votre pion!
             return -1
         
         if self.damier[n_x][n_y]:# test si la case d'arrivé est occupée
-            self.error_message="déjà un pion/une dame ici"
+            self.error_message= self.text_str[4] #déjà un pion/une dame ici
             return -1
 
         diff_x = n_x - x
         diff_y = n_y - y
         if abs(diff_y) != abs(diff_x):
-            self.error_message="Diagonale svp!"
+            self.error_message=self.text_str[5] #"Diagonale svp!"
             return -1
 
         
         if not pion.Dame: #on traite le cas des pions
             if (pion.couleur and diff_x<0) or (not pion.couleur and diff_x>0):
-                self.error_message="un pion ne peut pas aller en arrière"
+                self.error_message=self.text_str[6] #"un pion ne peut pas aller en arrière"
                 return -1
             if abs(n_y-y) == 1: #test si il est possible d'y aller en avançant
                 if self.mode_repas['activé']:
-                    self.error_message='continuer à manger!'
+                    self.error_message=self.text_str[7] #'continuer à manger!'
                 #le pion doit obligatoiremant manger si c'est possible
                 elif self.mes_pions_peuvent_manger():
-                    self.error_message='Il faut manger un pion!!!!!'
+                    self.error_message=self.text_str[8] #'Il faut manger un pion!!!!!'
                     return -1
                 else:
                     return 0    #déplacer
             if abs(n_y-y)==2:   #test si il est possible d'y aller en mangeant
                 if self.mode_repas['activé']:
                     if self.mode_repas['x']!=x or self.mode_repas['y']!=y:
-                        self.error_message='Le MÊME pion doit continuer à manger!'
+                        self.error_message=self.text_str[9] #'Le MÊME pion doit continuer à manger!'
                         return -1
             #/!\ prise obligatoire, verifier si il y a une prise possible avant de regarder si on peut avancer
                 pion_manger=self.damier[x+diff_x//2][y+diff_y//2]
                 if not pion_manger or pion_manger.couleur == self.tourne:
-                    self.error_message="on ne peut pas manger!"
+                    self.error_message=self.text_str[10] #"on ne peut pas manger!"
                     return -1
                 self.A_manger_x=x+diff_x//2
                 self.A_manger_y=y+diff_y//2
                 return 1 #manger
             
             #le cas dessous est donc quand abs(n_y-y)!=1, ni != 2
-            self.error_message="un pion ne peut pas aller si loin"
+            self.error_message=self.text_str[11] #"un pion ne peut pas aller si loin"
             return -1
         
         else: #on traite le cas des dames
             if self.mes_pions_peuvent_manger():
-                self.error_message='Il faut manger un pion!!!!!'
+                self.error_message=self.text_str[8] #'Il faut manger un pion!!!!!'
                 return -1
             if abs(diff_x)==1:return 0
             #test si toutes les cases sur la diagonales sont libre (oui -> avancer, oui sauf l'avant dernière -> manger, non -> pas possible)
@@ -203,7 +219,7 @@ class Game():
                 return 1
             
             #le cas dessous est donc soit diagonal n'est pas libre, soit on mange le faux pion
-            self.error_message="vous mangez trop!"
+            self.error_message=self.text_str[12] #"vous mangez trop!"
             return -1
 
     def mes_pions_peuvent_manger(self):
@@ -302,7 +318,7 @@ class Game():
         play_button_hitbox = pygame.Rect(0.375*self.window_size, 0.5*self.window_size, self.window_size, 0.2*self.window_size)
         pygame.draw.rect(self.window, self.colors['bg_color'],play_button_hitbox)
         self.window.blit(play_button, (0.375 * self.window_size, 0.5 * self.window_size))
-        play_text = title_font.render("Play", True, self.colors['txt_color'])
+        play_text = title_font.render(self.text_str[13] , True, self.colors['txt_color'])
         self.window.blit(play_text, (0.725*self.window_size, 0.5*self.window_size))
         game_name_l1 = title_font.render("JEU DE", True, self.colors['txt_color'])
         game_name_l2 = title_font.render("DAMES", True, self.colors['txt_color'])
@@ -332,9 +348,9 @@ class Game():
     def setting_gui(self, click, event):
         bg_rect = pygame.Rect(0, 0, 1.75 * self.window_size, self.window_size)
         pygame.draw.rect(self.window, self.colors['bg_color'], bg_rect)
-        self.window.blit(title_font.render("Son", True, self.colors['txt_color']),(0.2*self.window_size,0.2*self.window_size ) )
-        self.window.blit(title_font.render("Musique", True, self.colors['txt_color']),(0.2 * self.window_size, 0.4 * self.window_size))
-        self.window.blit(title_font.render("Générique", True, self.colors['txt_color']),(0.2 * self.window_size, 0.6 * self.window_size))
+        self.window.blit(title_font.render(self.text_str[14], True, self.colors['txt_color']),(0.2*self.window_size,0.2*self.window_size ) )
+        self.window.blit(title_font.render(self.text_str[15], True, self.colors['txt_color']),(0.2 * self.window_size, 0.4 * self.window_size))
+        self.window.blit(title_font.render(self.text_str[16], True, self.colors['txt_color']),(0.2 * self.window_size, 0.6 * self.window_size))
 
 
         on_img= pygame.transform.scale(pygame.image.load("switch_on.png").convert_alpha(),(0.12 * self.window_size, 0.12 * self.window_size))
@@ -361,6 +377,35 @@ class Game():
             file = open('Settings.txt', 'w')
             file.write("{}/{}/{}".format(self.play_music, self.play_sound, self.credit))
             file.close()
+    def lang_gui(self, click, event):
+        bg_rect = pygame.Rect(0, 0, 1.75 * self.window_size, self.window_size)
+        pygame.draw.rect(self.window, self.colors['bg_color'], bg_rect)
+
+        fr_b = self.window.blit(title_font.render("Français" if self.lang_buff == 'fr' else "French", True, self.colors['txt_color']),(0.2 * self.window_size, 0.2 * self.window_size))
+        en_b = self.window.blit(title_font.render("Anglais" if self.lang_buff == 'fr' else "English", True, self.colors['txt_color']),(0.2 * self.window_size, 0.4 * self.window_size))
+        self.window.blit(text_font.render(self.text_str[17], True, self.colors['txt_color']),(0.2 * self.window_size, 0.6 * self.window_size))
+
+
+        if fr_b.collidepoint(pygame.mouse.get_pos()) and event.type == pygame.MOUSEBUTTONDOWN:
+            self.lang_buff = "fr"
+            file = open('lang.txt', 'w')
+            file.write("fr")
+            file.close()
+            if self.play_sound: self.click_sound.play()
+        elif en_b.collidepoint(pygame.mouse.get_pos()) and event.type == pygame.MOUSEBUTTONDOWN:
+            self.lang_buff = "en"
+            file = open('lang.txt', 'w')
+            file.write("en")
+            file.close()
+            if self.play_sound: self.click_sound.play()
+
+        if self.lang_buff == "fr":
+            highlight = pygame.Rect(0.2*self.window_size, 0.2*self.window_size, 0.8*self.window_size, 0.15*self.window_size)
+            pygame.draw.rect(self.window, (0, 0, 0), highlight, 5)
+
+        elif self.lang_buff == "en":
+            highlight = pygame.Rect(0.2*self.window_size, 0.4*self.window_size, 0.8*self.window_size, 0.15*self.window_size)
+            pygame.draw.rect(self.window, (0, 0, 0), highlight, 5)
 
 
 game=Game()
@@ -443,6 +488,6 @@ while not stop:
         elif user_view == 2: #settings
             game.setting_gui(pygame.mouse.get_pos(), event)
         elif user_view == 3: #language
-            pass
+            game.lang_gui(pygame.mouse.get_pos(), event)
         elif user_view == 4: #leaderboard
             pass
