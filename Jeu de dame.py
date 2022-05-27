@@ -8,7 +8,7 @@ class Pion():
 
 
 class Game():
-    test=False
+    test=True
     message = ""
     mode_repas = {'activé':False} #s'il faut à un pion condinuellement manger
     damier=[[False for j in range(10)]for i in range(10)]   #False: Pas de pion sur la case
@@ -45,6 +45,9 @@ class Game():
     elif lang == 'en':
         file = open('English.txt', 'r', encoding='utf-8')
         text_str = str(file.read()).split("/")
+    #victories
+    file = open('win.txt', 'r')
+    victories_str = str(file.read()).split('/')
 
 
     lang_buff = lang
@@ -406,6 +409,13 @@ class Game():
             highlight = pygame.Rect(0.2*self.window_size, 0.4*self.window_size, 0.8*self.window_size, 0.15*self.window_size)
             pygame.draw.rect(self.window, (0, 0, 0), highlight, 5)
 
+    def leaderboard_gui(self):
+        bg_rect = pygame.Rect(0, 0, 1.75 * self.window_size, self.window_size)
+        pygame.draw.rect(self.window, self.colors['bg_color'], bg_rect)
+
+        self.window.blit(title_font.render(self.text_str[18] + str(len(self.victories_str)-1), True, self.colors['txt_color']),(0.2 * self.window_size, 0.2 * self.window_size))
+        self.window.blit(title_font.render(self.text_str[19] + str(self.victories_str.count('w')), True, self.colors['txt_color']),(0.2 * self.window_size, 0.4 * self.window_size))
+        self.window.blit(title_font.render(self.text_str[20] + str(self.victories_str.count('b')), True, self.colors['txt_color']),(0.2 * self.window_size, 0.6 * self.window_size))
 
 game=Game()
 
@@ -416,6 +426,7 @@ text_font = pygame.font.Font("CutiveMono-Regular.ttf", int(game.case_size*0.48))
 title_font = pygame.font.Font("CutiveMono-Regular.ttf", int(game.case_size*1.25))
 margin = int(0.05 *game.window_size)
 user_view = 0 #main menue : 0, game : 1, settings : 2, language setting : 3, leaderboard : 4
+is_written = False #permet de savoir si la victoire a dejà été inscrit dans le fichier externe, car sinon on a une boucle qui ajoute des victoire à l'infini
 
 if game.credit:
     credit_bg = pygame.transform.scale(pygame.image.load("game_credits.png").convert_alpha(), (game.window_size*1.75, game.window_size))
@@ -461,8 +472,14 @@ while not stop:
                 game.window.blit(txt, (game.window_size+margin, text_ord))
             #victoire
             if game.gagné != -1:
+                if not is_written:
+                    game.victories_str.append('b' if game.gagné else 'w')
+                    file = open('win.txt', 'a')
+                    file.write('b/' if game.gagné else 'w/')
+                    file.close()
+                    is_written = True
                 victory_announcement = text_font.render('Les noirs' if game.gagné else 'Les blancs' + ' ont gagnés !', True, game.colors["txt_color"])
-                game.window.blit(victory_announcement, (game.window_size + margin, 0.125*game.window_size))
+                game.window.blit(victory_announcement, (game.window_size + margin, 0.25*game.window_size))
                 instruction_message = text_font.render("Appuyez sur [esc]",True, game.colors["txt_color"])
                 game.window.blit(instruction_message, (game.window_size + margin, 0.9*game.window_size))
 
@@ -497,4 +514,4 @@ while not stop:
         elif user_view == 3: #language
             game.lang_gui(pygame.mouse.get_pos(), event)
         elif user_view == 4: #leaderboard
-            pass
+            game.leaderboard_gui()
