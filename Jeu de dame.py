@@ -26,9 +26,9 @@ class Game():
 
     #sound initialization
     pygame.mixer.init()
-    music = pygame.mixer.music.load("music.ogg")
-    click_sound = pygame.mixer.Sound("clic.ogg")
-    pawn_sound = pygame.mixer.Sound("pion.wav")
+    music = pygame.mixer.music.load("src/music.ogg")
+    click_sound = pygame.mixer.Sound("src/clic.ogg")
+    pawn_sound = pygame.mixer.Sound("src/pion.wav")
     file = open('Settings.txt', 'r')
     sound_data = str(file.read()).split("/")
     file.close()
@@ -66,7 +66,7 @@ class Game():
         pawn = lambda image: pygame.transform.scale(pygame.image.load(image).convert_alpha(), (self.case_size, self.case_size))
         self.icon=dict(zip(
             ('white pawn','black pawn', 'white king', 'black king'),
-            map(pawn,("white_pawn.png","black_pawn.png", "white_king.png", "black_king.png"))
+            map(pawn,("src/white_pawn.png","src/black_pawn.png", "src/white_king.png", "src/black_king.png"))
         ))
 
         #Initialization de damier
@@ -96,7 +96,7 @@ class Game():
         pawn = lambda image: pygame.transform.scale(pygame.image.load(image).convert_alpha(), (self.case_size, self.case_size))
         self.icon=dict(zip(
             ('white pawn','black pawn', 'white king', 'black king', 'hoover'),
-            map(pawn,("white_pawn.png","black_pawn.png", "white_king.png", "black_king.png", "hoover.png"))
+            map(pawn,("src/white_pawn.png","src/black_pawn.png", "src/white_king.png", "src/black_king.png", "src/hoover.png"))
         ))
 
     def affichage(self):#affichage console
@@ -309,14 +309,11 @@ class Game():
         pygame.draw.rect(self.window, self.colors['bg_color'], bg)
     def main_menu_gui(self, click, event):
         global user_view
-        #on pourra remplacer par une image pour ameliorer le design
-        #bg_shade_img = pygame.transform.scale(pygame.image.load("menu_bg.png").convert_alpha(), (self.window_size*1.75, self.window_size))
+
         bg_rect = pygame.Rect(0,0,1.75*self.window_size, self.window_size)
         pygame.draw.rect(self.window, self.colors['bg_color'],bg_rect)
-        play_button = pygame.transform.scale(pygame.image.load("play_button.png").convert_alpha(), (self.window_size, self.window_size*0.2))
-        #bg = pygame.Rect(0, 0, 1.75*self.window_size,self.window_size)
-        #pygame.draw.rect(self.window, self.colors['bg_color'], bg)
-        #self.window.blit(bg_shade_img, (0,0))
+        play_button = pygame.transform.scale(pygame.image.load("src/play_button.png").convert_alpha(), (self.window_size, self.window_size*0.2))
+
 
         play_button_hitbox = pygame.Rect(0.375*self.window_size, 0.5*self.window_size, self.window_size, 0.2*self.window_size)
         pygame.draw.rect(self.window, self.colors['bg_color'],play_button_hitbox)
@@ -329,15 +326,15 @@ class Game():
         self.window.blit(game_name_l2, (1.325*self.window_size, 0.2*self.window_size))
 
         #settings buttons
-        setting_button = pygame.transform.scale(pygame.image.load("settings_ico.png").convert_alpha(), (0.12*self.window_size, 0.12*self.window_size))
+        setting_button = pygame.transform.scale(pygame.image.load("src/settings_ico.png").convert_alpha(), (0.12*self.window_size, 0.12*self.window_size))
         setting_button_surface = self.window.blit(setting_button, (0.05*self.window_size, 0.05*self.window_size) )
-        lang_button = pygame.transform.scale(pygame.image.load("lang_ico.png").convert_alpha(),(0.12 * self.window_size, 0.12 * self.window_size))
+        lang_button = pygame.transform.scale(pygame.image.load("src/lang_ico.png").convert_alpha(),(0.12 * self.window_size, 0.12 * self.window_size))
         lang_button_surface = self.window.blit(lang_button, (0.22 * self.window_size, 0.05 * self.window_size))
-        leaderboard_button = pygame.transform.scale(pygame.image.load("leaderboard_ico.png").convert_alpha(),(0.12 * self.window_size, 0.12 * self.window_size))
+        leaderboard_button = pygame.transform.scale(pygame.image.load("src/leaderboard_ico.png").convert_alpha(),(0.12 * self.window_size, 0.12 * self.window_size))
         leaderboard_button_surface = self.window.blit(leaderboard_button, (0.39 * self.window_size, 0.05 * self.window_size))
 
         if play_button_hitbox.collidepoint(click):
-            play_button = pygame.transform.scale(pygame.image.load("play_button_hoover.png").convert_alpha(),(self.window_size, self.window_size * 0.2))
+            play_button = pygame.transform.scale(pygame.image.load("src/play_button_hoover.png").convert_alpha(),(self.window_size, self.window_size * 0.2))
             self.window.blit(play_button, (0.375 * self.window_size, 0.5 * self.window_size))
             play_text = title_font.render(self.text_str[13], True, self.colors['txt_color'])
             self.window.blit(play_text, (0.725 * self.window_size, 0.525 * self.window_size))
@@ -361,8 +358,8 @@ class Game():
         self.window.blit(title_font.render(self.text_str[16], True, self.colors['txt_color']),(0.2 * self.window_size, 0.6 * self.window_size))
 
 
-        on_img= pygame.transform.scale(pygame.image.load("switch_on.png").convert_alpha(),(0.12 * self.window_size, 0.12 * self.window_size))
-        off_img =pygame.transform.scale(pygame.image.load("switch_off.png").convert_alpha(),(0.12 * self.window_size, 0.12 * self.window_size))
+        on_img= pygame.transform.scale(pygame.image.load("src/switch_on.png").convert_alpha(),(0.12 * self.window_size, 0.12 * self.window_size))
+        off_img =pygame.transform.scale(pygame.image.load("src/switch_off.png").convert_alpha(),(0.12 * self.window_size, 0.12 * self.window_size))
 
         sound_switch = self.window.blit(on_img if self.play_sound == True else off_img, (self.window_size, 0.2*self.window_size))
         if  sound_switch.collidepoint(click) and event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -432,14 +429,14 @@ game=Game()
 
 stop = False
 selected=False
-text_font = pygame.font.Font("CutiveMono-Regular.ttf", int(game.case_size*0.48))
-title_font = pygame.font.Font("CutiveMono-Regular.ttf", int(game.case_size*1.25))
+text_font = pygame.font.Font("src/CutiveMono-Regular.ttf", int(game.case_size*0.48))
+title_font = pygame.font.Font("src/CutiveMono-Regular.ttf", int(game.case_size*1.25))
 margin = int(0.05 *game.window_size)
 user_view = 0 #main menue : 0, game : 1, settings : 2, language setting : 3, leaderboard : 4
 is_written = False #permet de savoir si la victoire a dejà été inscrit dans le fichier externe, car sinon on a une boucle qui ajoute des victoire à l'infini
 
 if game.credit:
-    credit_bg = pygame.transform.scale(pygame.image.load("game_credits.png").convert_alpha(), (game.window_size*1.75, game.window_size))
+    credit_bg = pygame.transform.scale(pygame.image.load("src/game_credits.png").convert_alpha(), (game.window_size*1.75, game.window_size))
     game.window.blit(credit_bg, (0,0))
     pygame.display.flip()
     time.sleep(2)
