@@ -26,13 +26,14 @@ class Game():
 
     #sound initialization
     pygame.mixer.init()
+    music = pygame.mixer.music.load("music.ogg")
     click_sound = pygame.mixer.Sound("clic.ogg")
     pawn_sound = pygame.mixer.Sound("pion.wav")
     file = open('Settings.txt', 'r')
     sound_data = str(file.read()).split("/")
     file.close()
-    play_sound = True if sound_data[0] == "True" else False
-    play_music = True if sound_data[1] == "True" else False
+    play_sound = True if sound_data[1] == "True" else False
+    play_music = True if sound_data[0] == "True" else False
     credit = True if sound_data[2] == "True" else False
 
     #text importation
@@ -306,7 +307,7 @@ class Game():
         #message display
         bg = pygame.Rect(self.window_size, 0, 0.75*self.window_size,self.window_size)
         pygame.draw.rect(self.window, self.colors['bg_color'], bg)
-    def main_menu_gui(self, click):
+    def main_menu_gui(self, click, event):
         global user_view
         #on pourra remplacer par une image pour ameliorer le design
         #bg_shade_img = pygame.transform.scale(pygame.image.load("menu_bg.png").convert_alpha(), (self.window_size*1.75, self.window_size))
@@ -336,15 +337,20 @@ class Game():
         leaderboard_button_surface = self.window.blit(leaderboard_button, (0.39 * self.window_size, 0.05 * self.window_size))
 
         if play_button_hitbox.collidepoint(click):
-            user_view = 1
-            if self.play_sound:self.click_sound.play()
-        elif setting_button_surface.collidepoint(click):
+            play_button = pygame.transform.scale(pygame.image.load("play_button_hoover.png").convert_alpha(),(self.window_size, self.window_size * 0.2))
+            self.window.blit(play_button, (0.375 * self.window_size, 0.5 * self.window_size))
+            play_text = title_font.render(self.text_str[13], True, self.colors['txt_color'])
+            self.window.blit(play_text, (0.725 * self.window_size, 0.525 * self.window_size))
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                user_view = 1
+                if self.play_sound:self.click_sound.play()
+        elif setting_button_surface.collidepoint(click) and event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             user_view = 2
             if self.play_sound:self.click_sound.play()
-        elif lang_button_surface.collidepoint(click):
+        elif lang_button_surface.collidepoint(click) and event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             user_view = 3
             if self.play_sound:self.click_sound.play()
-        elif leaderboard_button_surface.collidepoint(click):
+        elif leaderboard_button_surface.collidepoint(click) and event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             user_view = 4
             if self.play_sound:self.click_sound.play()
     def setting_gui(self, click, event):
@@ -372,6 +378,10 @@ class Game():
             file = open('Settings.txt', 'w')
             file.write("{}/{}/{}".format(self.play_music, self.play_sound, self.credit))
             file.close()
+            if not game.play_music:
+                pygame.mixer.music.pause()
+            elif game.play_music:
+                pygame.mixer.music.unpause()
         credit_switch = self.window.blit(on_img if self.credit == True else off_img, (self.window_size, 0.6*self.window_size))
         if credit_switch.collidepoint(click) and event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             self.credit = (False if self.credit == True else True)
@@ -433,20 +443,25 @@ if game.credit:
     game.window.blit(credit_bg, (0,0))
     pygame.display.flip()
     time.sleep(2)
-game.main_menu_gui((0,0))
-
+game.main_menu_gui((0,0), None)
+pygame.mixer.music.play(-1)
+if not game.play_music:
+    pygame.mixer.music.pause()
 while not stop:
 
+
     pygame.display.flip()
+
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE and user_view == 0):
             stop = True
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE :
             user_view = 0
-            game.main_menu_gui((0, 0))
+            game.main_menu_gui((0, 0), event)
         if user_view == 0:
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                game.main_menu_gui(pygame.mouse.get_pos())
+
+            game.main_menu_gui(pygame.mouse.get_pos(), event)
         #game.affichage()
         elif user_view == 1:
             game.affichage_gui()

@@ -61,7 +61,7 @@ La fonction `Game.juger` est un peu compliquée. Elle traite d'abord les cas gé
 
 `main_menu_gui(self, click)` : affiche le menu principal en affichant les différents boutons et élément de design. Pour les clics, on utilise des collisions avec les différents boutons, ce qui permet d'accéder au reste du programme.
 
-`setting_gui(self, click, event)` : affiche les paramètre du jeu : activer ou désactiver le son, la musique ou l'écran de présentation (ce dernier paramètre nécessite un redémarrage de l'application). Les changements sont inscrits dans un fichier externe (Settings.txt) afin d'être conservé au redémarrage.
+`setting_gui(self, click, event)` : affiche les paramètre du jeu : activer ou désactiver le son, la musique ou l'écran de présentation (ce dernier paramètre nécessite un redémarrage de l'application). Les changements sont inscrits dans un fichier externe (Settings.txt) afin d'être conservé au redémarrage (attention, cela peut prendre quelque seconde, ne pas immédiatement redemarrer le programme après avoir fait un changement, sinon cela risque de ne pas être pris en compte)
 
 `lang_gui(self, click, event)` : permet de changer la langue du programme. Pour cela, on stock toute le texte affiché dans 2 fichier de langue que l'on importe sous forme de liste. Le paramètre change un autre fichier, lang.txt, qui stock la langue à importer au démarrage.
 
