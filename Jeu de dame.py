@@ -45,8 +45,7 @@ class Game():
     elif lang == 'en':
         file = open('English.txt', 'r', encoding='utf-8')
         text_str = str(file.read()).split("/")
-    else:
-        print("on ne passe dans aucune condition")
+
 
     lang_buff = lang
 
@@ -447,12 +446,27 @@ while not stop:
         #game.affichage()
         elif user_view == 1:
             game.affichage_gui()
-            """
-            turn_print = text_font.render(game.turn_print, True, (255, 255, 255))
-            game.window.blit(turn_print, (game.window_size + margin, margin))
-            """
-            message_print = text_font.render(game.message, True, (0, 0, 0))
-            game.window.blit(message_print, (game.window_size + margin,margin))
+            #bloc conditonnel pour que le message ne déborde pas de l'écran
+            if len(game.message)<24:
+                message_print = text_font.render(game.message, True, game.colors['txt_color'])
+                game.window.blit(message_print, (game.window_size + margin,margin))
+            else:
+                words = game.message.split(' ')
+                len_count = 0
+                line_li = []
+                text_ord = margin
+                for k in words:
+                    len_count += len(k)
+                    line_li.append(k)
+                    if len_count > 13:
+                        len_count = 0
+                        txt = text_font.render(' '.join(line_li), True, game.colors['txt_color'])
+                        game.window.blit(txt, (game.window_size+margin, text_ord))
+                        line_li = []
+                        text_ord += 0.1*game.window_size
+                txt = text_font.render(' '.join(line_li), True, (0, 0, 0))
+                game.window.blit(txt, (game.window_size+margin, text_ord))
+            #victoire
             if game.gagné != -1:
                 victory_announcement = text_font.render('Les noirs' if game.gagné else 'Les blancs' + ' ont gagnés !', True, game.colors["txt_color"])
                 game.window.blit(victory_announcement, (game.window_size + margin, 0.125*game.window_size))
