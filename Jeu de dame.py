@@ -385,13 +385,13 @@ class Game():
         self.window.blit(text_font.render(self.text_str[17], True, self.colors['txt_color']),(0.2 * self.window_size, 0.6 * self.window_size))
 
 
-        if fr_b.collidepoint(pygame.mouse.get_pos()) and event.type == pygame.MOUSEBUTTONDOWN:
+        if fr_b.collidepoint(click) and event.type == pygame.MOUSEBUTTONDOWN:
             self.lang_buff = "fr"
             file = open('lang.txt', 'w')
             file.write("fr")
             file.close()
             if self.play_sound: self.click_sound.play()
-        elif en_b.collidepoint(pygame.mouse.get_pos()) and event.type == pygame.MOUSEBUTTONDOWN:
+        elif en_b.collidepoint(click) and event.type == pygame.MOUSEBUTTONDOWN:
             self.lang_buff = "en"
             file = open('lang.txt', 'w')
             file.write("en")
@@ -409,13 +409,6 @@ class Game():
 
 game=Game()
 
-
-"""
-while True:
-    game.affichage()
-    x,y,n_x,n_y=map(lambda x:int(x),input("Please input the order(x y n_x n_y):\t"))
-    game.new_turn(x,y,n_x,n_y)
-"""
 
 stop = False
 selected=False
