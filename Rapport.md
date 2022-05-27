@@ -5,7 +5,7 @@ Lien du design : [Jeu de dames - Figma](https://www.figma.com/file/m8VwZRUorLVr3
 
 ## Contributeurs
 
-Clément CHAPARD : La graphique, le design et la langue.
+Clément CHAPARD : La graphique, le design et la langue et la base des règles.
 
 SUN Jixiang : Réalisation des règle, Connexion entre le noyau et la graphique.
 
@@ -72,3 +72,7 @@ Ensuite, la boucle `for event in pygame.event.get():` est parcouru chaque fois q
 Cela permet ainsi de définir la fermeture du jeu quand on ferme la fenêtre, ainsi que le rôle de la touche echap (retour au menu principal ou quitter).
 La boucle est ensuite découpé en différentes `user_view`, correspondant à la partie du programme dans laquelle nous nous trouvons.
 Chacune d'entre elle renvoie aux fonctions d'affichage associés. Dans la `user_view` 1, correspondant à la phase de jeu, on doit également afficher les messages. On utilise un algorithme qui permet un retour à la ligne si un message est trop long. Si il n'y a pas victoire, on détecte les clics et la position de la souris pour permettre la sélection/désélection des pions, et on met un effet blanc quand la souris passe au dessus d'un pion que l'on a la droit de jouer, ainsi que sur le pion sélectionné.
+
+## Point d'améliorations
+
+Afin d'ammeliorer le programme, nous pourrions permettre de réinitialiser une partie sans avoir à redemarrer le jeu. Nous pourrions également afficher les différents coups possible. On pourrait également imaginer un mode de jeu contre l'ordinateur, ou encore plus avancé, un mode de jeu en réseau.
