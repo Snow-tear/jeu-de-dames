@@ -8,7 +8,7 @@ class Pion():
 
 
 class Game():
-    test=True
+    test=False
     message = ""
     mode_repas = {'activé':False} #s'il faut à un pion condinuellement manger
     damier=[[False for j in range(10)]for i in range(10)]   #False: Pas de pion sur la case
