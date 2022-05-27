@@ -21,7 +21,7 @@ class Game():
             'txt_color':(0, 0, 0),
             'bg_color':(241, 255, 247)
         }
-    window_size=400 #window's size in pixel 实际上是屏幕高, 推荐值720或1080
+    window_size=720 #window's size in pixel 实际上是屏幕高, 推荐值720或1080
     margin = int(window_size*0.02) #让屏幕尺寸为16:9
 
     #sound initialization
